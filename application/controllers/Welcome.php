@@ -55,7 +55,8 @@ function __construct(){
 		if(isset($_SESSION['username'])){
 			$test['user']=$this->user_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
-			$this->load->view('principal');
+			$this->load->view('solicitudes');
+			
 		}else{
 		$this->load->view('loginv2');
 		}
