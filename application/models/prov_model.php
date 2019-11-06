@@ -16,6 +16,7 @@ class prov_model extends CI_Model{
 			return $error = $this->db->error();
 			}
 	}
+	
 	function delete_prov($id){
 		$this->db->set('activo',0);
 		$this->db->where('idproveedor',$id);

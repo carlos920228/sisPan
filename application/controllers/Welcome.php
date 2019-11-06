@@ -7,6 +7,7 @@ function __construct(){
 		$this->load->database();
 		$this->load->model('user_model');
 		$this->load->model('prov_model');
+		$this->load->model('estruc_model');
 	}
 	public function index(){
 		if(isset($_SESSION['username'])){
@@ -139,6 +140,57 @@ function __construct(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
 			$this->prov_model->update_prov($_GET['id'],$_POST);
 			redirect('welcome/verProveedores');
+		}else{
+		redirect('welcome');
+		}
+	}
+	//Métodos estructuras
+	//Pantalla inicial
+	public function estructuras(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['data']=$this->estruc_model->get_estructuras();
+			$this->load->view('menu',$test);
+			$this->load->view('crudEstructuras',$test);
+		}else{
+		$this->load->view('loginv2');
+		}}
+//Agregar
+public function addEstructuras(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$this->estruc_model->add_estructura($_POST);
+			redirect('welcome/estructuras');
+			}else{
+		redirect('welcome');
+		}
+	}
+		//Vista a detalle de estructura seleccionada
+		public function updateEstruc(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['prov']=$this->estruc_model->get_detalle($_GET['id']);
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$this->load->view('menu',$test);
+			$this->load->view('modEstruc',$test);
+		}else{
+		redirect('welcome');
+		}
+	
+	}
+	// Actualizar estructura
+	public function updateEstrucTrue(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->estruc_model->update_estruc($_GET['id'],$_POST);
+			redirect('welcome/estructuras');
+		}else{
+		redirect('welcome');
+		}
+	}
+	//Eliminar Estructura
+	public function deleteEstruc(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->estruc_model->delete_estruc($_GET['id']);
+			redirect('welcome/estructuras');
 		}else{
 		redirect('welcome');
 		}

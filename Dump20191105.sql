@@ -16,6 +16,34 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `estructuras`
+--
+
+DROP TABLE IF EXISTS `estructuras`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `estructuras` (
+  `idestructuras` int(11) NOT NULL AUTO_INCREMENT,
+  `estructura` varchar(45) DEFAULT NULL,
+  `titular` varchar(100) DEFAULT NULL,
+  `estado` int(11) DEFAULT 1,
+  `presupuesto` varchar(45) DEFAULT NULL,
+  `mensual` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`idestructuras`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `estructuras`
+--
+
+LOCK TABLES `estructuras` WRITE;
+/*!40000 ALTER TABLE `estructuras` DISABLE KEYS */;
+INSERT INTO `estructuras` VALUES (1,'ACAJETE',' ZOREN JOAQUIN HERNANDEZ RODRIGUEZ ',1,'78854.12','6571.18'),(2,'ACATLAN',' FRANCISCO RENDON GRAJALES',1,'61069.46','5089.12');
+/*!40000 ALTER TABLE `estructuras` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `partidas`
 --
 
@@ -63,8 +91,9 @@ CREATE TABLE `proveedor` (
   `ciudad` varchar(45) DEFAULT NULL,
   `estado` varchar(45) DEFAULT NULL,
   `id_ine` varchar(45) DEFAULT NULL,
+  `activo` int(11) DEFAULT 1,
   PRIMARY KEY (`idproveedor`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -73,6 +102,7 @@ CREATE TABLE `proveedor` (
 
 LOCK TABLES `proveedor` WRITE;
 /*!40000 ALTER TABLE `proveedor` DISABLE KEYS */;
+INSERT INTO `proveedor` VALUES (1,'CARLOS HUMBERTO ROMERO CALLEJAS','Carlos Humberto Romero Callejas','ROCC920228','Santander','009988776635255','REFORMA S/N, No. 12','(228) 838-7334','(228) 838-7334','Carlos920228@gmail.com','EL LIMON','Veracruz','12345',1),(2,'Pepe Pecas SA','PEPE ','ROCA890312','Banamex','1234578977655','REFORMA S/N, No. 12','(228) 838-7334','(228) 838-7334','Carlos920228@gmail.com','EL LIMON','Veracruz','',1);
 /*!40000 ALTER TABLE `proveedor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,4 +189,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-10-23 19:02:09
+-- Dump completed on 2019-11-05 23:34:42

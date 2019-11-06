@@ -81,6 +81,7 @@ header, main, footer ,body{
             echo '<li><a href="'.base_url().'welcome/verSolicitudes"><i class="small material-icons white-text">account_balance_wallet</i>Solicitudes</a></li>';
             echo '<li><a href="'.base_url().'welcome/verProveedores"><i class="small material-icons white-text">payment</i>Proveedores</a></li>';
             echo '<li><a href="'.base_url().'welcome/verUsuarios"><i class="small material-icons white-text">account_box</i>Usuarios</a></li>';
+            echo '<li><a href="'.base_url().'welcome/estructuras"><i class="small material-icons white-text">account_balance</i>Estructuras</a></li>';            
             }
            ?>
             <li><a href='<?php echo base_url()."welcome/exit";?>'><i class="small material-icons white-text">announcement</i>Salir</a></li>
