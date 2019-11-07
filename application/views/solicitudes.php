@@ -18,6 +18,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <th>Motivo</th>
         <th></th>
       </tr>
+      <?php
+          foreach ($pendientes->result() as $user) {
+            echo "<tr>";
+            echo "<td>$user->Fecha</td>";
+            echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
+            echo "<td>$user->motivo</td>";
+            echo "</tr>";
+          }?>
     </table>  
 </div>
 <div id="test-swipe-2" class="col s12">

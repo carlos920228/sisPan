@@ -10,7 +10,12 @@ class solicitud_model extends CI_Model{
 		return $result;
 		
 	}
-
+    function get_solUserPenWait($name){
+        $this->db->where('estado','pendiente');
+        $this->db->where('nombre',$name);
+        $result= $this->db->get('solicitudes');
+        return $result; 
+    }
 
 	public function add_sol(){
     $this->db->trans_begin();

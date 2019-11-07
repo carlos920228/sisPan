@@ -51,6 +51,10 @@ $fecha=date("Y-m-d");
             </div>
           </div>  
           <div class="row">
+            <div class="input-field col s6">
+              <input id="motivo" name="motivo" type="text" class="validate" required>
+              <label for="motivo">Motivo</label>
+            </div>
             <div class="input-field col s6 right">
             <button class="btn waves-effect light-blue darken-2 right pulse" type="submit">Continuar
               <i class="material-icons right">arrow_forward</i>

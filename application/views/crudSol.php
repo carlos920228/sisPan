@@ -80,15 +80,13 @@ $fecha=date("Y-m-d");
 <!-- Tabla de usuarios-->
 <table>
   <tr>
-    <th>Fecha de Solicitud</th>
+    <th>Fecha Solicitud</th>
     <th>Nombre del Solicitante</th>
     <th>Area del Solicitante</th>
-    <th>Comision</th>
-    <th>Ciudad Origen</th>
-    <th>Estado Origen</th>
-    <th>Ciudad Destino</th>
-    <th>Estado Destino</th>
+    <th>Motivo</th>
+    <th>Total</th>
     <th>Estatus</th>
+    <th colspan="3" class="center">Acción</th>
   </tr>
   <?php
           foreach ($data->result() as $user) {
@@ -96,12 +94,8 @@ $fecha=date("Y-m-d");
             echo "<td>$user->Fecha</td>";
             echo "<td>$user->Nombre</td>";
             echo "<td>$user->area</td>";
-            echo "<td>$user->denominacion_comision</td>";
-            echo "<td>$user->ciudad_origen</td>";
-            echo "<td>$user->estado_origen</td>";
-            echo "<td>$user->ciudad_destino</td>";
-            echo "<td>$user->estado_destino</td>";
-
+            echo "<td>$user->motivo</td>";
+            echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
             if ($user->estatus==0)
             {
               echo "<td>XML Invalido</td>";
@@ -116,6 +110,9 @@ $fecha=date("Y-m-d");
             {
               echo "<td>Factura Valida</td>";
             }
+            echo '<td><a href="'.base_url().'welcome/deleteSol?id='.$user->folio.'" title="Cancelar Solicitud"><i class="material-icons red-text center">cancel</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/acceptSol?id='.$user->folio.'" title="Aceptar Solicitud"><i class="material-icons green-text center">beenhere</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/acceptSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
           }?> 
 </table>  
     </div>

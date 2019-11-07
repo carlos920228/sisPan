@@ -57,8 +57,12 @@ function __construct(){
 	public function verMisSolicitudes(){
 		if(isset($_SESSION['username'])){
 			$test['user']=$this->user_model->data($_SESSION['username']);
+			$user=$test['user'];
+			$use=$user[0];
+			$name=$use->nombre." ".$use->apellidos;
+			$test['pendientes']=$this->solicitud_model->get_solUserPenWait($name);
 			$this->load->view('menu',$test);
-			$this->load->view('solicitudes');
+			$this->load->view('solicitudes',$test);
 			
 		}else{
 		$this->load->view('loginv2');
@@ -69,8 +73,6 @@ function __construct(){
 			$test['user']=$this->user_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
 			$test['data']=$this->solicitud_model->get_solicitud();
-
-			$this->load->view('menu',$test);
 			$this->load->view('crudSol',$test);
 		}else{
 		$this->load->view('loginv2');
