@@ -35,31 +35,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
               <label for="departamento">Departamento</label>
             </div>
             <div class="input-field col s6">
-              <input id="comite_municipal" name="comite_municipal" type="text" class="validate" required>
-              <label for="comite_municipal">Comité municipal</label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="input-field col s6">
-              <input id="delegacion" type="text" name="delegacion" class="validate" required>
-              <label for="delegacion">Delegación</label>
-            </div>
-            <div class="input-field col s6">
-              <input id="comision" name="comision" type="text" class="validate" required>
-              <label for="comision">Comisión</label>
-            </div>
-          </div>  
-          <div class="row">
-            <div class="input-field col s6">
               <input id="celular" type="text" name="celular" class="validate" required>
               <label for="celular">Teléfono celular</label>
             </div>
-            <div class="input-field col s3">
+          </div>
+           
+          <div class="row">
+            <div class="input-field col s6">
               <input id="password" name="password" type="password" class="validate" required>
               <label for="password">Contraseña</label>
             </div>
-            <div class="input-field col s3">
-              <input id="nivel" name="nivel" type="text" class="validate" required>
+            <div class="input-field col s6">
+              <input id="nivel" name="nivel" type="number" min="0" class="validate" required>
               <label for="nivel">Tipo de usuario</label>
             </div>
           </div> 
@@ -87,9 +74,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <th>Teléfono</th>
     <th>Correo</th>
     <th>Depto</th>
-    <th>Comite</th>
-    <th>Delegación</th>
-    <th>Comisión</th>
     <th>Celular</th>
     <th></th>
   </tr>
@@ -101,9 +85,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "<td>$user->telefono</td>";
             echo "<td>$user->correo</td>";
             echo "<td>$user->departamento</td>";
-            echo "<td>$user->comite_municipal</td>";
-            echo "<td>$user->delegacion</td>";
-            echo "<td>$user->comision</td>";
             echo "<td>$user->celular</td>";
             echo '<td><a href="'.base_url().'welcome/deleteUser?id='.$user->idusuarios.'"<i class="material-icons red-text center">delete</i></td>';
             echo "</tr>";
@@ -121,5 +102,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     var instances = M.Sidenav.init(elems);
      var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems);
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems);
   });           
   </script>

@@ -90,5 +90,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     var el = document.querySelectorAll('.tabs');
     var instances = M.Sidenav.init(elems);
     var instance = M.Tabs.init(el);
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems);
   });    
   </script>

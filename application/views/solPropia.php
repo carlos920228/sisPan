@@ -3,10 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $fecha=date("Y-m-d");
 ?>
     <div class="container">
-      <a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
-<!--Modal para agregar usuario-->
-  <div id="modal1" class="modal modal">
-    <div class="modal-content">
+      
       <h4 >Agregar Solicitud</h4>
       <div class="row">
         <form class="col s12" method="post" action='<?php echo base_url()."welcome/addSol";?>' accept-charset="utf-8" enctype="multipart/form-data">
@@ -54,71 +51,16 @@ $fecha=date("Y-m-d");
             </div>
           </div>  
           <div class="row">
-            <div class="input-field col s12">
-              <input type='file' class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar Factura' name='userfile' id="factura_recurso" size='20' accept='.xml'/>
-            </div>
-
-
-          </div> 
-
-          <div class="row">
-            <div class="input-field col s6">
-            <button class="btn waves-effect light-blue darken-2" type="submit">Guardar
-              <i class="material-icons right">save</i>
+            <div class="input-field col s6 right">
+            <button class="btn waves-effect light-blue darken-2 right pulse" type="submit">Continuar
+              <i class="material-icons right">arrow_forward</i>
             </button>
           </div>
-          <div class="input-field col s6">
-            <a class=" modal-action modal-close waves-effect light-blue darken-2 btn-flat">Cerrar
-              <i class="material-icons right">close</i>
-            </a>
           </div>
           </div>          
         </form>
       </div>
-    </div>
-  </div>
-<!-- Tabla de usuarios-->
-<table>
-  <tr>
-    <th>Fecha de Solicitud</th>
-    <th>Nombre del Solicitante</th>
-    <th>Area del Solicitante</th>
-    <th>Comision</th>
-    <th>Ciudad Origen</th>
-    <th>Estado Origen</th>
-    <th>Ciudad Destino</th>
-    <th>Estado Destino</th>
-    <th>Estatus</th>
-  </tr>
-  <?php
-          foreach ($data->result() as $user) {
-            echo "<tr>";
-            echo "<td>$user->Fecha</td>";
-            echo "<td>$user->Nombre</td>";
-            echo "<td>$user->area</td>";
-            echo "<td>$user->denominacion_comision</td>";
-            echo "<td>$user->ciudad_origen</td>";
-            echo "<td>$user->estado_origen</td>";
-            echo "<td>$user->ciudad_destino</td>";
-            echo "<td>$user->estado_destino</td>";
 
-            if ($user->estatus==0)
-            {
-              echo "<td>XML Invalido</td>";
-            }
-
-            else if ($user->estatus==1)
-            {
-              echo "<td>Factura Invalida</td>";
-            }
-
-            else
-            {
-              echo "<td>Factura Valida</td>";
-            }
-          }?> 
-</table>  
-    </div>
 </body>
 
     <!-- Compiled and minified JavaScript -->

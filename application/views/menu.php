@@ -8,7 +8,7 @@
         height: 400px;
         background-color: grey;
       }
-
+body { background-color:#DAE4F5; }
 .login{
     background:rgba(0, 0, 0, .6);
   }
@@ -74,7 +74,13 @@ header, main, footer ,body{
                echo $use->nombre." ".$use->apellidos;?></span></a>
            </li>
            
-           <li><a href='<?php echo base_url()."welcome/addSol";?>'><i class="small material-icons white-text">add_shopping_cart</i>Generar Solicitud</a></li>
+           <li><a class='dropdown-trigger' href='#' data-target='dropdown1'><i class="small material-icons white-text">add_shopping_cart</i>Generar Solicitud</a></li>
+           <!-- Dropdown Structure -->
+  <ul id='dropdown1' class='dropdown-content blue'>
+    <li><a href="#">Proovedores</a></li>
+    <li><a href='<?php echo base_url()."welcome/generarSolicitud";?>'>Propia</a></li>
+    <li><a href="#!">Estructura</a></li>
+  </ul>
            <li><a href='<?php echo base_url()."welcome/verMisSolicitudes";?>'><i class="small material-icons white-text">remove_red_eye</i>Ver mis solicitudes</a></li>
            <?php 
            if($_SESSION['rol']==1){
