@@ -74,7 +74,7 @@ header, main, footer ,body{
                echo $use->nombre." ".$use->apellidos;?></span></a>
            </li>
            
-           <li><a href='<?php echo base_url()."welcome/generarSolicitud";?>'><i class="small material-icons white-text">add_shopping_cart</i>Generar Solicitud</a></li>
+           <li><a href='<?php echo base_url()."welcome/addSol";?>'><i class="small material-icons white-text">add_shopping_cart</i>Generar Solicitud</a></li>
            <li><a href='<?php echo base_url()."welcome/verMisSolicitudes";?>'><i class="small material-icons white-text">remove_red_eye</i>Ver mis solicitudes</a></li>
            <?php 
            if($_SESSION['rol']==1){
