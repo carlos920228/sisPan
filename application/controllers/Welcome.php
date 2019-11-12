@@ -204,6 +204,26 @@ public function addEstructuras(){
 		}
 	}
 
+	public function detalleSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->solicitud_model->addMetadata($_POST);
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			redirect('welcome/verMisSolicitudes');
+		}else{
+		redirect('welcome');
+		}
+	}
+	public function modSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['meta']=$this->solicitud_model->getMetadata($_GET['id']);
+			$this->load->view('menu',$test);
+			$this->load->view('modSol',$test);
+		}else{
+		redirect('welcome');
+		}
+	}
+
 	//Eucario
 	public function addSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){

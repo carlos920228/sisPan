@@ -13,13 +13,24 @@ class solicitud_model extends CI_Model{
     function get_solUserPenWait($name){
         $this->db->where('estado','pendiente');
         $this->db->where('nombre',$name);
+        $this->db->order_by('folio', 'DESC');
         $result= $this->db->get('solicitudes');
         return $result; 
     }
-
+    function getMetadata($id){
+        $this->db->where('folio',$id);
+        $result= $this->db->get('solicitudes');
+        return $result->result(); 
+    }
+    function addMetadata($data){
+        If(!$this->db->insert('solicitudes',$data)){
+            return $error = $this->db->error();
+            }
+        $insert_id = $this->db->insert_id();
+        return  $insert_id;
+    }
 	public function add_sol(){
     $this->db->trans_begin();
-
     $this->db->set('Fecha', $this->fecha);
     $this->db->set('Nombre', $this->nombre);
     $this->db->set('area', $this->area);
