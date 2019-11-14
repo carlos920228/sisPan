@@ -1,5 +1,6 @@
 <div class="container">
-<h4 >Agregar Proveedor</h4>
+  <title>Modificar estructura</title>
+<h4 >Modificar estructura</h4>
       <div class="row">
         <form class="col s12" method="post" action='<?php
         $use=$prov[0];

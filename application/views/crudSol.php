@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 $fecha=date("Y-m-d");
 ?>
+<title>Administración solicitudes</title>
     <div class="container">
      <!-- <a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
 Modal para agregar usuario-->

@@ -1,5 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');?>
+<title>Ver solicitud</title>
 <div class="container">
       <!--Modal para agregar partida-->
          <?php 

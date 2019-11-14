@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
+<title>SIFI</title>
   <div class="container ">
     <div class="row center">
       <div class="col s12 center">

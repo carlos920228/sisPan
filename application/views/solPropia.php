@@ -1,7 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 $fecha=date("Y-m-d");
-?>  <h5 class="center">Generar solicitud personal</h5>>
+?> 
+<title>Generar solicitud</title>
+ <h5 class="center">Generar solicitud personal</h5>>
     <div class="container">
       <div class="row">
         <form class="col s12" method="post" action='<?php echo base_url()."welcome/detalleSol";?>' accept-charset="utf-8" enctype="multipart/form-data">

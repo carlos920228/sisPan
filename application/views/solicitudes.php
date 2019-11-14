@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
+<title>Mis solicitudes</title>
   <title>Mis solicitudes</title>
   <div class="container ">
    <ul id="tabs tabs-fixed-width tab-demo z-depth-1" class="tabs">

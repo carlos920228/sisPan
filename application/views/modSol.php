@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');?>
+<title>Modificar Solicitud</title>
 <div class="container">
+
       <!--Modal para agregar partida-->
   <div id="modal1" class="modal modal">
     <div class="modal-content">
