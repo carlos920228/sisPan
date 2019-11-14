@@ -48,7 +48,7 @@ $fecha=date("Y-m-d");
               <input id="motivo" name="motivo" type="text" class="validate" required>
               <label for="motivo">Motivo</label>
               </div>
-               <input id="estado" name="estado" type="text" class="validate" required value="Pendiente" hidden="">
+               <input id="estado" name="estado" type="text" class="validate" required value="pendiente" hidden="">
             </div>
               <div class="input-field col s6 right">
               <button class="btn waves-effect light-blue darken-2" type="submit">Continuar

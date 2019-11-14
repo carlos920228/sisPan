@@ -60,7 +60,9 @@ function __construct(){
 			$user=$test['user'];
 			$use=$user[0];
 			$name=$use->nombre." ".$use->apellidos;
-			$test['pendientes']=$this->solicitud_model->get_solUserPenWait($name);
+			$test['pendientes']=$this->solicitud_model->get_solUserPenWait($name,'pendiente');
+			$test['canceladas']=$this->solicitud_model->get_solUserPenWait($name,'cancelada');
+			$test['aceptadas']=$this->solicitud_model->get_solUserPenWait($name,'aceptada');
 			$this->load->view('menu',$test);
 			$this->load->view('solicitudes',$test);
 			
@@ -205,22 +207,85 @@ public function addEstructuras(){
 	}
 
 	public function detalleSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->solicitud_model->addMetadata($_POST);
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$test['user']=$this->user_model->data($_SESSION['username']);
-			redirect('welcome/verMisSolicitudes');
+			redirect('welcome/modSol?id='.$this->solicitud_model->addMetadata($_POST));
 		}else{
 		redirect('welcome');
 		}
 	}
 	public function modSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$test['user']=$this->user_model->data($_SESSION['username']);
-			$test['meta']=$this->solicitud_model->getMetadata($_GET['id']);
+			$use=$test['user'];
+			$name=$use[0]->nombre." ".$use[0]->apellidos;
+			$test['meta']=$this->solicitud_model->getMetadata($_GET['id'],$name);
+			$meta=$test['meta'];
+			if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
+				redirect('welcome/verMisSolicitudes');
+			}
+			$test['partidas']=$this->solicitud_model->getPartidas($_GET['id']);
 			$this->load->view('menu',$test);
 			$this->load->view('modSol',$test);
+
 		}else{
 		redirect('welcome');
+		}
+	}
+	public function seeSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$use=$test['user'];
+			$name=$use[0]->nombre." ".$use[0]->apellidos;
+			$test['meta']=$this->solicitud_model->getMetadata($_GET['id'],$name);
+			$meta=$test['meta'];
+			$test['partidas']=$this->solicitud_model->getPartidas($_GET['id']);
+			$this->load->view('menu',$test);
+			$this->load->view('seeSol',$test);
+
+		}else{
+		redirect('welcome');
+		}
+	}
+	public function deleteSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+			$this->solicitud_model->deleteSol($_GET['id']);
+			redirect('welcome/verMisSolicitudes');
+		}else{
+			redirect('welcome');
+		}
+	}
+	public function cancelSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->solicitud_model->cancelSol($_GET['id']);
+			redirect('welcome/verSolicitudes');
+		}else{
+			redirect('welcome');
+		}
+	}
+public function acceptSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->solicitud_model->acceptSol($_GET['id']);
+			redirect('welcome/verSolicitudes');
+		}else{
+			redirect('welcome');
+		}
+	}
+	public function addPartida(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+			$this->solicitud_model->addPartida($_POST);
+			$this->solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
+			redirect('welcome/modSol?id='.$_POST['solicitudes_folio']);
+		}else{
+		redirect('welcome/');
+		}
+	}
+	public function restSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+			$this->solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
+			redirect('welcome/modSol?id='.$_GET['id']);
+		}else{
+		redirect('welcome/');
 		}
 	}
 

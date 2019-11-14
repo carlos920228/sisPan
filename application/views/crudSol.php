@@ -3,8 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $fecha=date("Y-m-d");
 ?>
     <div class="container">
-      <a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
-<!--Modal para agregar usuario-->
+     <!-- <a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
+Modal para agregar usuario-->
   <div id="modal1" class="modal modal">
     <div class="modal-content">
       <h4 >Agregar Solicitud</h4>
@@ -85,7 +85,7 @@ $fecha=date("Y-m-d");
     <th>Area del Solicitante</th>
     <th>Motivo</th>
     <th>Total</th>
-    <th>Estatus</th>
+    <!--<th>Estatus</th>-->
     <th colspan="3" class="center">Acción</th>
   </tr>
   <?php
@@ -96,7 +96,7 @@ $fecha=date("Y-m-d");
             echo "<td>$user->area</td>";
             echo "<td>$user->motivo</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
-            if ($user->estatus==0)
+            /*if ($user->estatus==0)
             {
               echo "<td>XML Invalido</td>";
             }
@@ -109,10 +109,10 @@ $fecha=date("Y-m-d");
             else
             {
               echo "<td>Factura Valida</td>";
-            }
-            echo '<td><a href="'.base_url().'welcome/deleteSol?id='.$user->folio.'" title="Cancelar Solicitud"><i class="material-icons red-text center">cancel</i></a></td>';
+            }*/
+            echo '<td><a href="'.base_url().'welcome/cancelSol?id='.$user->folio.'" title="Cancelar Solicitud"><i class="material-icons red-text center">cancel</i></a></td>';
             echo '<td><a href="'.base_url().'welcome/acceptSol?id='.$user->folio.'" title="Aceptar Solicitud"><i class="material-icons green-text center">beenhere</i></a></td>';
-            echo '<td><a href="'.base_url().'welcome/acceptSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/seeSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
           }?> 
 </table>  
     </div>
