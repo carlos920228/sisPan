@@ -10,7 +10,8 @@
 		
 	}
 	.login{
-		margin-top: 80px;
+		margin-top: 30px;
+		max-width: 600px;
 	}
 	.login .card{
 		background:rgba(0, 0, 0, .6);
@@ -37,7 +38,7 @@
 <body>
 <div class="container center">
 <div class="row login">
-	<div class="col s6 offset-s3">
+	<div class="col s12 ">
 		<form method="post" action='<?php echo base_url()."welcome/entrar";?>'>
 		<div class="card">
 			<div class="card-action blue white-text">
