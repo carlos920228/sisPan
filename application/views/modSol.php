@@ -18,11 +18,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
              <?php $use=$meta[0];
                echo 'value="'.$use->folio.'"';?> hidden>
             <div class="input-field col s6">
-              <input id="descripcion" type="text" name="descripcion" class="validate" required>
-              <label for="descripcion">Descripción</label>
+            <select id="concepto" name="descripcion" class="validate" required>
+            <option value="" disabled selected>Selecciona una opción</option>
+            <option value="Autobuses">Autobuses</option>
+            <option value="Gasolina">Gasolina</option>
+            <option value="Casetas">Casetas</option>
+            <option value="Hotel">Hotel</option>
+            <option value="Comidas">Comidas</option>
+            <option value="Otro">Otro</option>
+            </select>
+            <label data-error="wrong" data-success="right" for="activity">Concepto</label>
             </div>
             <div class="input-field col s6">
-            <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Monto</label>
+            <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Cantidad</label>
             </div>
           </div>      
           <div class="row">
@@ -43,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
   </div>
       <div class="row">
           <div class="row modal-form-row">
-            <div class="input-field col s2">
+            <div class="input-field col s3">
               <input id="Fecha" type="date" name="Fecha" 
               <?php $use=$meta[0];
                echo 'value="'.$use->Fecha.'"';?> readonly>
@@ -55,17 +63,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
                echo 'value="'.$use->Nombre.'"';?> readonly>
               <label for="Nombre">Nombre del Solicitante</label>
             </div>
-            <div class="input-field col s3">
+            <div class="input-field col s2">
               <input id="area" type="text" name="area"
               <?php $use=$meta[0];
                echo 'value="'.$use->area.'"';?> readonly>
-              <label for="area">Area del Solicitante</label>
+              <label for="area">Depto</label>
             </div>
             <div class="input-field col s3">
               <input id="denominacion_comision" name="denominacion_comision" type="text" 
               <?php $use=$meta[0];
                echo 'value="'.$use->denominacion_comision.'"';?> readonly>
-              <label for="denominacion_comision">Comisión</label>
+              <label for="denominacion_comision">Actividad</label>
             </div>
           </div>       
           <div class="row">
@@ -95,6 +103,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             </div>
           </div>
           <div class="row">
+            <div class="input-field col s3">
+              <input id="estado_destino" name="estado_destino" type="text"
+              <?php $use=$meta[0];
+               echo 'value="'.$use->secretaria.'"';?> readonly>
+              <label for="estado_destino">Secretaría</label>
+            </div>
             <div class="input-field col s6">
               <input id="motivo" name="motivo" type="text" <?php $use=$meta[0];
                echo 'value="'.$use->motivo.'"';?> readonly>
@@ -124,8 +138,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "<tr>";
             echo "<td>$user->descripcion</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
-            if($use->estado!=='pendiente' && $use->estado!=='cancelada'){
-              echo '<td><a href="'.base_url().'welcome/comprobar?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">account_balance_wallet</i></td>';
+            if($use->estado!=='pendiente' && $use->estado!=='cancelada' && $use->estado!=='aceptada'){
+              echo "<td><input type='file' class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile' id='factura_recurso' size='20' accept='.xml'/>
+              </td>";
+
             }else{
             if($use->estado=='pendiente'){
             echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">delete</i></td>';}
@@ -147,5 +163,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
     var instances = M.Modal.init(elems);
     var elems = document.querySelectorAll('.dropdown-trigger');
     var instances = M.Dropdown.init(elems);
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems);
   });           
   </script>

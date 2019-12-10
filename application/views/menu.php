@@ -76,15 +76,22 @@ header, main, footer ,body{
            
            <li><a class='dropdown-trigger' href='#' data-target='dropdown1'><i class="small material-icons white-text">add_shopping_cart</i>Generar Solicitud</a></li>
            <!-- Dropdown Structure -->
-  <ul id='dropdown1' class='dropdown-content blue'>
-    <li><a href="#">Proovedores</a></li>
-    <li><a href='<?php echo base_url()."welcome/generarSolicitud";?>'>Propia</a></li>
-    <li><a href="#!">Estructura</a></li>
-  </ul>
+            <ul id='dropdown1' class='dropdown-content blue'>
+            <li><a href="#">Proovedores</a></li>
+            <li><a href='<?php echo base_url()."welcome/generarSolicitud";?>'>Viáticos</a></li>
+            <li><a href="#!">Estructura</a></li>
+            </ul>
            <li><a href='<?php echo base_url()."welcome/verMisSolicitudes";?>'><i class="small material-icons white-text">remove_red_eye</i>Ver mis solicitudes</a></li>
            <?php 
            if($_SESSION['rol']==1){
-            echo '<li><a href="'.base_url().'welcome/verSolicitudes"><i class="small material-icons white-text">account_balance_wallet</i>Solicitudes</a></li>';
+            //Menú para administrar solicitudes
+            echo '<li><a class="dropdown-trigger" href="#" data-target="dropdown2"><i class="small material-icons white-text">account_balance_wallet</i>Solicitudes</a></li>';
+            echo '<ul id="dropdown2" class="dropdown-content blue">';
+            echo '<li><a href="'.base_url().'welcome/verSolicitudes">Pendientes de aprobar</a></li>';
+            echo '<li><a href="'.base_url().'welcome/pagarSolicitudes">Pendientes de pagar</a></li>';
+            echo '<li><a href="'.base_url().'welcome/verificarComprobacion">Verificar comprobación</a></li>';
+            echo "</ul>";
+            //--------------------------
             echo '<li><a href="'.base_url().'welcome/verProveedores"><i class="small material-icons white-text">payment</i>Proveedores</a></li>';
             echo '<li><a href="'.base_url().'welcome/verUsuarios"><i class="small material-icons white-text">account_box</i>Usuarios</a></li>';
             echo '<li><a href="'.base_url().'welcome/estructuras"><i class="small material-icons white-text">account_balance</i>Estructuras</a></li>';            

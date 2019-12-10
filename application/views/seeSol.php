@@ -62,6 +62,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             </div>
           </div>
           <div class="row">
+             <div class="input-field col s3">
+              <input id="estado_destino" name="estado_destino" type="text"
+              <?php $use=$meta[0];
+               echo 'value="'.$use->secretaria.'"';?> readonly>
+              <label for="estado_destino">Secretaría</label>
+            </div>
             <div class="input-field col s6">
               <input id="motivo" name="motivo" type="text" <?php $use=$meta[0];
                echo 'value="'.$use->motivo.'"';?> readonly>

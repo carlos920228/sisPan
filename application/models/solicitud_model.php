@@ -66,6 +66,12 @@ class solicitud_model extends CI_Model{
         $this->db->where('estado','pendiente');
         $this->db->update('solicitudes');
     }
+    function paySol($id){
+        $this->db->set('estado','pagada');
+        $this->db->where('folio',$id);
+        $this->db->where('estado','aceptada');
+        $this->db->update('solicitudes');
+    }
 	public function add_sol(){
     $this->db->trans_begin();
     $this->db->set('Fecha', $this->fecha);
@@ -89,7 +95,12 @@ class solicitud_model extends CI_Model{
         return true;
         }
 }
-
-
+//get_solicitudPagar
+function get_solicitudPagar(){
+        $this->db->where('estado','aceptada');
+        $result= $this->db->get('solicitudes');
+        return $result;
+        
+    }
 
 }?>

@@ -63,6 +63,7 @@ function __construct(){
 			$test['pendientes']=$this->solicitud_model->get_solUserPenWait($name,'pendiente');
 			$test['canceladas']=$this->solicitud_model->get_solUserPenWait($name,'cancelada');
 			$test['aceptadas']=$this->solicitud_model->get_solUserPenWait($name,'aceptada');
+			$test['pagadas']=$this->solicitud_model->get_solUserPenWait($name,'pagada');
 			$this->load->view('menu',$test);
 			$this->load->view('solicitudes',$test);
 			
@@ -271,6 +272,14 @@ public function acceptSol(){
 			redirect('welcome');
 		}
 	}
+public function paySol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$this->solicitud_model->paySol($_GET['id']);
+			redirect('welcome/pagarSolicitudes');
+		}else{
+			redirect('welcome');
+		}
+	}
 	public function addPartida(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$this->solicitud_model->addPartida($_POST);
@@ -288,6 +297,17 @@ public function acceptSol(){
 		redirect('welcome/');
 		}
 	}
+	public function pagarSolicitudes(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+			$test['user']=$this->user_model->data($_SESSION['username']);
+			$this->load->view('menu',$test);
+			$test['data']=$this->solicitud_model->get_solicitudPagar();
+			$this->load->view('solPagar',$test);
+		}else{
+		redirect('welcome/');
+		}
+	}
+
 
 	//Eucario
 	public function addSol(){
