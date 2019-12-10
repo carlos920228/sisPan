@@ -373,8 +373,6 @@ $config = array(
     {
       //$this->load->model('Recursos_model');
       //$this->Recursos_model->update_factura($archivo);
-
-
       $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
       //$namespaces = $xml->getDocNamespaces();
       $ns = $xml->getNamespaces(true);

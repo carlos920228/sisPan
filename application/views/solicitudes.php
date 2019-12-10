@@ -8,8 +8,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <li class="tab col s3 grey lighten-1"><a class="active black-text" href="#test-swipe-1" >Pendientes</a></li>
     <li class="tab col s3 grey lighten-1"><a  href="#test-swipe-2" class="black-text">Aprobadas</a></li>
     <li class="tab col s3 grey lighten-1"><a href="#test-swipe-4"class="black-text">Comprobar</a></li>
-    <li class="tab col s3 grey lighten-1"><a href="#test-swipe-5"class="black-text">Comprobadas</a></li>
+    <li class="tab col s3 grey lighten-1"><a href="#test-swipe-5"class="black-text">Finalizadas</a></li>
     <li class="tab col s3 grey lighten-1"><a href="#test-swipe-6"class="red-text">Canceladas</a></li>
+    <li class="tab col s3 grey lighten-1"><a href="#test-swipe-7"class="red-text">Incidencias</a></li>
   </ul>
   <div id="test-swipe-1" class="col s12">
     <table>
