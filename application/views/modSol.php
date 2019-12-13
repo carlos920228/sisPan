@@ -139,8 +139,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "<td>$user->descripcion</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
             if($use->estado!=='pendiente' && $use->estado!=='cancelada' && $use->estado!=='aceptada'){
-              echo "<td><input type='file' class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile' id='factura_recurso' size='20' accept='.xml'/>
+              echo "
+              <td>
+              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
+              <input type='file' class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile' id='factura_recurso' size='20' accept='.xml' onchange='form.submit()'/>
+              </form>
               </td>";
+
+              if ($user->foliosat!="")
+              {
+                echo "<td>XML Vigente</td>";
+              }
+              else
+              {
+                echo "<td>XML no Valido</td>";
+              }
+
+
 
             }else{
             if($use->estado=='pendiente'){

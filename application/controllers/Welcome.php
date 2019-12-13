@@ -6,14 +6,14 @@ class Welcome extends CI_Controller {
 function __construct(){
 		parent::__construct();
 		$this->load->database();
-		$this->load->model('user_model');
-		$this->load->model('prov_model');
-		$this->load->model('estruc_model');
-		$this->load->model('solicitud_model');
+		$this->load->model('User_model');
+		$this->load->model('Prov_model');
+		$this->load->model('Estruc_model');
+		$this->load->model('Solicitud_model');
 	}
 	public function index(){
 		if(isset($_SESSION['username'])){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
 			$this->load->view('principal');
 		}else{
@@ -24,10 +24,10 @@ function __construct(){
 		if(isset($_SESSION['username'])){
 
 		}
-		if($this->user_model->login($_POST['username'],$_POST['password'])){
+		if($this->User_model->login($_POST['username'],$_POST['password'])){
 			//Guardamos el nombre de usuario
 			$this->session->set_userdata('username',$_POST['username']);
-			$user=$this->user_model->data($_POST['username']);
+			$user=$this->User_model->data($_POST['username']);
 			$test['user']=$user;
 			$use=$user[0];
 			//Guardamos el rol en la sesion
@@ -47,7 +47,7 @@ function __construct(){
 	
 	public function generarSolicitud(){
 		if(isset($_SESSION['username'])){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
 			$this->load->view('solPropia');
 		}else{
@@ -56,14 +56,14 @@ function __construct(){
 	}
 	public function verMisSolicitudes(){
 		if(isset($_SESSION['username'])){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$user=$test['user'];
 			$use=$user[0];
 			$name=$use->nombre." ".$use->apellidos;
-			$test['pendientes']=$this->solicitud_model->get_solUserPenWait($name,'pendiente');
-			$test['canceladas']=$this->solicitud_model->get_solUserPenWait($name,'cancelada');
-			$test['aceptadas']=$this->solicitud_model->get_solUserPenWait($name,'aceptada');
-			$test['pagadas']=$this->solicitud_model->get_solUserPenWait($name,'pagada');
+			$test['pendientes']=$this->Solicitud_model->get_solUserPenWait($name,'pendiente');
+			$test['canceladas']=$this->Solicitud_model->get_solUserPenWait($name,'cancelada');
+			$test['aceptadas']=$this->Solicitud_model->get_solUserPenWait($name,'aceptada');
+			$test['pagadas']=$this->Solicitud_model->get_solUserPenWait($name,'pagada');
 			$this->load->view('menu',$test);
 			$this->load->view('solicitudes',$test);
 			
@@ -73,9 +73,9 @@ function __construct(){
 	}
 	public function verSolicitudes(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
-			$test['data']=$this->solicitud_model->get_solicitud();
+			$test['data']=$this->Solicitud_model->get_solicitud();
 			$this->load->view('crudSol',$test);
 		}else{
 		$this->load->view('loginv2');
@@ -83,8 +83,8 @@ function __construct(){
 	}
 	public function verProveedores(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$test['data']=$this->prov_model->get_prov();
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$test['data']=$this->Prov_model->get_prov();
 			$this->load->view('menu',$test);
 			$this->load->view('crudProv',$test);
 		}else{
@@ -93,8 +93,8 @@ function __construct(){
 	}
 	public function verUsuarios(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$test['data']=$this->user_model->get_user();
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$test['data']=$this->User_model->get_user();
 			$this->load->view('menu',$test);
 			$this->load->view('crudUsuarios',$test);
 		}else{
@@ -103,8 +103,8 @@ function __construct(){
 	}
 	public function addUser(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$this->user_model->add_user($_POST);
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$this->User_model->add_user($_POST);
 			redirect('welcome/verUsuarios');
 			}else{
 		redirect('welcome');
@@ -112,7 +112,7 @@ function __construct(){
 	}
 	public function deleteUser(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->user_model->delete_user($_GET['id']);
+			$this->User_model->delete_user($_GET['id']);
 			redirect('welcome/verUsuarios');
 		}else{
 		redirect('welcome');
@@ -121,8 +121,8 @@ function __construct(){
 
 	public function addProv(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$this->prov_model->add_prov($_POST);
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$this->Prov_model->add_prov($_POST);
 			redirect('welcome/verProveedores');
 			}else{
 		redirect('welcome');
@@ -130,7 +130,7 @@ function __construct(){
 	}
 	public function deleteProv(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->prov_model->delete_prov($_GET['id']);
+			$this->Prov_model->delete_prov($_GET['id']);
 			redirect('welcome/verProveedores');
 		}else{
 		redirect('welcome');
@@ -139,8 +139,8 @@ function __construct(){
 		//Método para actualizar al proveedor
 	public function updateProv(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['prov']=$this->prov_model->get_prov_detalle($_GET['id']);
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['prov']=$this->Prov_model->get_prov_detalle($_GET['id']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
 			$this->load->view('modProv',$test);
 		}else{
@@ -149,7 +149,7 @@ function __construct(){
 	}
 	public function updateProvTrue(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->prov_model->update_prov($_GET['id'],$_POST);
+			$this->Prov_model->update_prov($_GET['id'],$_POST);
 			redirect('welcome/verProveedores');
 		}else{
 		redirect('welcome');
@@ -159,8 +159,8 @@ function __construct(){
 	//Pantalla inicial
 	public function estructuras(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$test['data']=$this->estruc_model->get_estructuras();
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$test['data']=$this->Estruc_model->get_estructuras();
 			$this->load->view('menu',$test);
 			$this->load->view('crudEstructuras',$test);
 		}else{
@@ -169,8 +169,8 @@ function __construct(){
 //Agregar
 public function addEstructuras(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			$this->estruc_model->add_estructura($_POST);
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			$this->Estruc_model->add_estructura($_POST);
 			redirect('welcome/estructuras');
 			}else{
 		redirect('welcome');
@@ -179,8 +179,8 @@ public function addEstructuras(){
 		//Vista a detalle de estructura seleccionada
 		public function updateEstruc(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['prov']=$this->estruc_model->get_detalle($_GET['id']);
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['prov']=$this->Estruc_model->get_detalle($_GET['id']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
 			$this->load->view('modEstruc',$test);
 		}else{
@@ -191,7 +191,7 @@ public function addEstructuras(){
 	// Actualizar estructura
 	public function updateEstrucTrue(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->estruc_model->update_estruc($_GET['id'],$_POST);
+			$this->Estruc_model->update_estruc($_GET['id'],$_POST);
 			redirect('welcome/estructuras');
 		}else{
 		redirect('welcome');
@@ -200,7 +200,7 @@ public function addEstructuras(){
 	//Eliminar Estructura
 	public function deleteEstruc(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->estruc_model->delete_estruc($_GET['id']);
+			$this->Estruc_model->delete_estruc($_GET['id']);
 			redirect('welcome/estructuras');
 		}else{
 		redirect('welcome');
@@ -209,23 +209,23 @@ public function addEstructuras(){
 
 	public function detalleSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
-			redirect('welcome/modSol?id='.$this->solicitud_model->addMetadata($_POST));
+			$test['user']=$this->User_model->data($_SESSION['username']);
+			redirect('welcome/modSol?id='.$this->Solicitud_model->addMetadata($_POST));
 		}else{
 		redirect('welcome');
 		}
 	}
 	public function modSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$use=$test['user'];
 			$name=$use[0]->nombre." ".$use[0]->apellidos;
-			$test['meta']=$this->solicitud_model->getMetadata($_GET['id'],$name);
+			$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
 			$meta=$test['meta'];
 			if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
 				redirect('welcome/verMisSolicitudes');
 			}
-			$test['partidas']=$this->solicitud_model->getPartidas($_GET['id']);
+			$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
 			$this->load->view('menu',$test);
 			$this->load->view('modSol',$test);
 
@@ -235,12 +235,12 @@ public function addEstructuras(){
 	}
 	public function seeSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$use=$test['user'];
 			$name=$use[0]->nombre." ".$use[0]->apellidos;
-			$test['meta']=$this->solicitud_model->getMetadata($_GET['id'],$name);
+			$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
 			$meta=$test['meta'];
-			$test['partidas']=$this->solicitud_model->getPartidas($_GET['id']);
+			$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
 			$this->load->view('menu',$test);
 			$this->load->view('seeSol',$test);
 
@@ -250,7 +250,7 @@ public function addEstructuras(){
 	}
 	public function deleteSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->solicitud_model->deleteSol($_GET['id']);
+			$this->Solicitud_model->deleteSol($_GET['id']);
 			redirect('welcome/verMisSolicitudes');
 		}else{
 			redirect('welcome');
@@ -258,7 +258,7 @@ public function addEstructuras(){
 	}
 	public function cancelSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->solicitud_model->cancelSol($_GET['id']);
+			$this->Solicitud_model->cancelSol($_GET['id']);
 			redirect('welcome/verSolicitudes');
 		}else{
 			redirect('welcome');
@@ -266,7 +266,7 @@ public function addEstructuras(){
 	}
 public function acceptSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->solicitud_model->acceptSol($_GET['id']);
+			$this->Solicitud_model->acceptSol($_GET['id']);
 			redirect('welcome/verSolicitudes');
 		}else{
 			redirect('welcome');
@@ -274,7 +274,7 @@ public function acceptSol(){
 	}
 public function paySol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$this->solicitud_model->paySol($_GET['id']);
+			$this->Solicitud_model->paySol($_GET['id']);
 			redirect('welcome/pagarSolicitudes');
 		}else{
 			redirect('welcome');
@@ -282,8 +282,8 @@ public function paySol(){
 	}
 	public function addPartida(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->solicitud_model->addPartida($_POST);
-			$this->solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
+			$this->Solicitud_model->addPartida($_POST);
+			$this->Solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
 			redirect('welcome/modSol?id='.$_POST['solicitudes_folio']);
 		}else{
 		redirect('welcome/');
@@ -291,7 +291,7 @@ public function paySol(){
 	}
 	public function restSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
+			$this->Solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
 			redirect('welcome/modSol?id='.$_GET['id']);
 		}else{
 		redirect('welcome/');
@@ -299,9 +299,9 @@ public function paySol(){
 	}
 	public function pagarSolicitudes(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 			$this->load->view('menu',$test);
-			$test['data']=$this->solicitud_model->get_solicitudPagar();
+			$test['data']=$this->Solicitud_model->get_solicitudPagar();
 			$this->load->view('solPagar',$test);
 		}else{
 		redirect('welcome/');
@@ -312,7 +312,7 @@ public function paySol(){
 	//Eucario
 	public function addSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->user_model->data($_SESSION['username']);
+			$test['user']=$this->User_model->data($_SESSION['username']);
 
     if ($_FILES['userfile']['error'] == UPLOAD_ERR_NO_FILE)
     {
@@ -322,18 +322,18 @@ public function paySol(){
     {
       $this->cargar_factura();
 
-      $this->solicitud_model->fecha = $this->input->post('Fecha');
-  	  $this->solicitud_model->nombre = $this->input->post('Nombre');
-      $this->solicitud_model->area = $this->input->post('area');
-      $this->solicitud_model->comision = $this->input->post('denominacion_comision');
-      $this->solicitud_model->c_origen = $this->input->post('ciudad_origen');
-      $this->solicitud_model->e_origen = $this->input->post('estado_origen');
-      $this->solicitud_model->c_destino = $this->input->post('ciudad_destino');
-  	  $this->solicitud_model->e_destino = $this->input->post('estado_destino');
+      $this->Solicitud_model->fecha = $this->input->post('Fecha');
+  	  $this->Solicitud_model->nombre = $this->input->post('Nombre');
+      $this->Solicitud_model->area = $this->input->post('area');
+      $this->Solicitud_model->comision = $this->input->post('denominacion_comision');
+      $this->Solicitud_model->c_origen = $this->input->post('ciudad_origen');
+      $this->Solicitud_model->e_origen = $this->input->post('estado_origen');
+      $this->Solicitud_model->c_destino = $this->input->post('ciudad_destino');
+  	  $this->Solicitud_model->e_destino = $this->input->post('estado_destino');
   	  //$this->solicitud_model->archivo = $this->input->post('userfile');
-      $this->solicitud_model->estatus = $this->estatus;
+      $this->Solicitud_model->estatus = $this->estatus;
 
-      $this->solicitud_model->add_sol($_POST);
+      $this->Solicitud_model->add_sol($_POST);
     }
 
 			redirect('welcome/verSolicitudes');
@@ -345,7 +345,7 @@ public function paySol(){
 
 
 //funcion que guarda las facturas
-function cargar_factura() {
+function cargar_factura($id,$folio) {
 
 //$mi_imagen = 'mi_image';
 
@@ -373,7 +373,8 @@ $config = array(
     {
       //$this->load->model('Recursos_model');
       //$this->Recursos_model->update_factura($archivo);
-      $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
+	  $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
+	  $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
       //$namespaces = $xml->getDocNamespaces();
       $ns = $xml->getNamespaces(true);
 
@@ -427,14 +428,35 @@ if ($xml->getName()=="Comprobante")
       if ($valido=="Vigente")
       {
         //$this->session->set_flashdata('correcto', 'El Comprobante Fiscal es Valido');
-        //echo "El Comprobante Fiscal es Valido";
-        $this->estatus=2;
+		//echo "El Comprobante Fiscal es Valido";
+		
+		$this->Solicitud_model->emisor=$emisor;
+		$this->Solicitud_model->receptor=$receptor;
+		$this->Solicitud_model->total=$total;
+		$this->Solicitud_model->folio=$uuid;
+
+		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+		//$this->Solicitud_model->xml=$xml;
+
+		$this->Solicitud_model->updatepartida($folio);
+		$this->estatus=2;
+		
       }
       else
       {
         //$this->session->set_flashdata('error', 'El Comprobante Fiscal es Invalido');
-        //echo "El Comprobante Fiscal es Invalido";
-        $this->estatus=1;
+		//echo "El Comprobante Fiscal es Invalido";
+		$this->Solicitud_model->emisor="";
+		$this->Solicitud_model->receptor="";
+		$this->Solicitud_model->total=0;
+		$this->Solicitud_model->folio="";
+
+		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+		//$this->Solicitud_model->xml=$xml;
+
+		$this->Solicitud_model->updatepartida($folio);
+		$this->estatus=1;
+		
       }
 }
 
@@ -445,7 +467,7 @@ else
         $this->estatus=0;
       }
       
-      //redirect('Recursos');
+      redirect('welcome/modSol?id='.$id.'');
 
     }
 
