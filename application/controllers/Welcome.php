@@ -64,6 +64,7 @@ function __construct(){
 			$test['canceladas']=$this->Solicitud_model->get_solUserPenWait($name,'cancelada');
 			$test['aceptadas']=$this->Solicitud_model->get_solUserPenWait($name,'aceptada');
 			$test['pagadas']=$this->Solicitud_model->get_solUserPenWait($name,'pagada');
+			$test['finalizadas']=$this->Solicitud_model->get_solUserPenWait($name,'finalizadas');
 			$this->load->view('menu',$test);
 			$this->load->view('solicitudes',$test);
 			
@@ -229,6 +230,14 @@ public function addEstructuras(){
 			$this->load->view('menu',$test);
 			$this->load->view('modSol',$test);
 
+		}else{
+		redirect('welcome');
+		}
+	}
+	public function finSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+				$this->Solicitud_model->finSol($_GET['id']);
+				redirect('welcome/verMisSolicitudes');
 		}else{
 		redirect('welcome');
 		}

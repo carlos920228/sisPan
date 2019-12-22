@@ -99,6 +99,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
           }?>      
     </table>  
 </div>
+<div id="test-swipe-7" class="col s12">
+  <table>
+        <tr>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Motivo</th>
+        <th></th>
+      </tr>
+    </table>  
+</div>
 </div>
 </body>
 

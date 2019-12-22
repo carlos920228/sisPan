@@ -152,7 +152,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               }
               else
               {
-                echo "<td>XML no Valido</td>";
+                echo "<td red-text>pendiente</td>";
               }
 
 
@@ -164,7 +164,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "</tr>";
           }?> 
         </tbody>
-      </table>  
+      </table> 
+      <br>
+       <?php 
+       if($use->estado=='pagada'){
+       echo '<a href="'.base_url().'welcome/finSol?id='.$use->folio.'" class="btn-large">Finalizar</a>';}?>
         </body>
 
     <!-- Compiled and minified JavaScript -->
