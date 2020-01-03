@@ -113,6 +113,41 @@ function get_solicitudPagar(){
     }
 
 
+
+//get_solicitudPagar
+public function get_solicitudVerificar(){
+    
+    $this->db->where('estado','verificar');
+    $result= $this->db->get('solicitudes');
+    return $result;
+    
+}
+
+//Funcion que revisa si el xml ya fue subido por alguien mas
+ public function checkxml($foliosat){
+        $this->db->where('foliosat',$foliosat);
+        $result= $this->db->get('partidas');
+        return $result->result(); 
+    }
+
+//Funcion que cambia el estatus de la solicitud a verificar para validar que los xml subidos sean correctos
+public function verifySol($id){
+    $this->db->trans_begin();
+
+    $this->db->set('estado','verificar');
+    $this->db->where('folio',$id);
+    $this->db->where('estado','pagada');
+    $this->db->update('solicitudes');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+    }else{
+        $this->db->trans_commit();
+        return true;
+    }
+}
+
 //Funcion que agrega a la partida los datos del xml validado
 public function updatepartida($id){
     $this->db->trans_begin();
@@ -121,7 +156,8 @@ public function updatepartida($id){
     $this->db->set('receptor', $this->receptor);
     $this->db->set('totalfactura', $this->total);
     $this->db->set('foliosat', $this->folio);
-    //$this->db->set('xml', $this->xml);
+    $this->db->set('xml', $this->xml);
+    $this->db->set('estatus', $this->estatus);
 
     $this->db->where('idpartidas', $id);
     $this->db->update('partidas');

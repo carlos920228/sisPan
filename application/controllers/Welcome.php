@@ -289,6 +289,19 @@ public function paySol(){
 			redirect('welcome');
 		}
 	}
+
+
+//Funcion que envia las solicitudes para la verificacion de los xml
+	public function verifySol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+			$this->Solicitud_model->verifySol($_GET['id']);
+			redirect('welcome/verMisSolicitudes');
+		}else{
+			redirect('welcome');
+		}
+	}
+
+
 	public function addPartida(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$this->Solicitud_model->addPartida($_POST);
@@ -306,6 +319,7 @@ public function paySol(){
 		redirect('welcome/');
 		}
 	}
+
 	public function pagarSolicitudes(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$test['user']=$this->User_model->data($_SESSION['username']);
@@ -316,6 +330,20 @@ public function paySol(){
 		redirect('welcome/');
 		}
 	}
+
+
+public function verificarComprobacion(){
+	
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$this->load->view('menu',$test);
+		$test['data']=$this->Solicitud_model->get_solicitudVerificar();
+		$this->load->view('solVerificar',$test);
+		
+		}else{
+		redirect('welcome/');
+		}
+}
 
 
 	//Eucario
@@ -353,7 +381,7 @@ public function paySol(){
 
 
 
-//funcion que guarda las facturas
+//funcion que guarda y valida las facturas
 function cargar_factura($id,$folio) {
 
 //$mi_imagen = 'mi_image';
@@ -383,7 +411,12 @@ $config = array(
       //$this->load->model('Recursos_model');
       //$this->Recursos_model->update_factura($archivo);
 	  $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
-	  $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
+
+	  //header("Content-Type: text/plain");
+	  //$content = file_get_contents("./uploads/prueba.xml");
+	  $cadena = htmlentities(file_get_contents("./uploads/prueba.xml"));
+	  //echo $content;
+
       //$namespaces = $xml->getDocNamespaces();
       $ns = $xml->getNamespaces(true);
 
@@ -439,19 +472,35 @@ if ($xml->getName()=="Comprobante")
         //$this->session->set_flashdata('correcto', 'El Comprobante Fiscal es Valido');
 		//echo "El Comprobante Fiscal es Valido";
 		
-		$this->Solicitud_model->emisor=$emisor;
-		$this->Solicitud_model->receptor=$receptor;
-		$this->Solicitud_model->total=$total;
-		$this->Solicitud_model->folio=$uuid;
-
-		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-		//$this->Solicitud_model->xml=$xml;
-
-		$this->Solicitud_model->updatepartida($folio);
-		$this->estatus=2;
+		if ($this->Solicitud_model->checkxml($uuid))
+		{
+			$this->Solicitud_model->emisor="";
+			$this->Solicitud_model->receptor="";
+			$this->Solicitud_model->total="";
+			$this->Solicitud_model->folio="";
+	
+			//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+			$this->Solicitud_model->xml="";
+			$this->Solicitud_model->estatus=4;
+	
+			$this->Solicitud_model->updatepartida($folio);
+		}
+		else
+		{
+			$this->Solicitud_model->emisor=$emisor;
+			$this->Solicitud_model->receptor=$receptor;
+			$this->Solicitud_model->total=$total;
+			$this->Solicitud_model->folio=$uuid;
+	
+			//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+			$this->Solicitud_model->xml=$cadena;
+			$this->Solicitud_model->estatus=1;
+	
+			$this->Solicitud_model->updatepartida($folio);
+		}
 		
       }
-      else
+      else if ($valido=="Cancelado")
       {
         //$this->session->set_flashdata('error', 'El Comprobante Fiscal es Invalido');
 		//echo "El Comprobante Fiscal es Invalido";
@@ -461,10 +510,10 @@ if ($xml->getName()=="Comprobante")
 		$this->Solicitud_model->folio="";
 
 		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-		//$this->Solicitud_model->xml=$xml;
+		$this->Solicitud_model->xml="";
+		$this->Solicitud_model->estatus=2;
 
 		$this->Solicitud_model->updatepartida($folio);
-		$this->estatus=1;
 		
       }
 }
@@ -472,7 +521,17 @@ if ($xml->getName()=="Comprobante")
 else
       {
         //$this->session->set_flashdata('error', 'El XML no es un Comprobante Fiscal');
-        //echo "El XML no es un Comprobante Fiscal";
+		//echo "El XML no es un Comprobante Fiscal";
+		$this->Solicitud_model->emisor="";
+		$this->Solicitud_model->receptor="";
+		$this->Solicitud_model->total=0;
+		$this->Solicitud_model->folio="";
+
+		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+		$this->Solicitud_model->xml="";
+		$this->Solicitud_model->estatus=3;
+
+		$this->Solicitud_model->updatepartida($folio);
         $this->estatus=0;
       }
       

@@ -146,17 +146,29 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               </form>
               </td>";
 
-              if ($user->foliosat!="")
+              if ($user->estatus=="1")
               {
                 echo "<td>XML Vigente</td>";
               }
-              else
+              else if ($user->estatus=="2")
               {
+
                 echo "<td red-text>pendiente</td>";
+
+                echo "<td>XML Cancelado</td>";
               }
-
-
-
+              else if ($user->estatus=="3")
+              {
+                echo "<td>Factura Invalida</td>";
+              }
+              else if ($user->estatus=="4")
+              {
+                echo "<td>XML en uso</td>";
+              }
+              else if ($user->estatus=="0")
+              {
+                echo "<td></td>";
+              }
             }else{
             if($use->estado=='pendiente'){
             echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">delete</i></td>';}
@@ -169,6 +181,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
        <?php 
        if($use->estado=='pagada'){
        echo '<a href="'.base_url().'welcome/finSol?id='.$use->folio.'" class="btn-large">Finalizar</a>';}?>
+      </table>
+
+            <a href="<?php echo base_url() ?>welcome/verifySol?id=<?=$use->folio ?>" class="btn waves-effect light-red darken-2">  Comprobar <i class="material-icons right">save</i>
+
         </body>
 
     <!-- Compiled and minified JavaScript -->
