@@ -345,6 +345,29 @@ public function verificarComprobacion(){
 		}
 }
 
+public function downloadxml(){
+	
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+		$test['user']=$this->User_model->data($_SESSION['username']);
+
+		$test=$this->Solicitud_model->get_xml($_GET['id']);
+		
+		
+		$xml= str_replace(['&lt;','&gt;','&quot;','&nbsp;','&Aacute;','&Eacute;','&Iacute;','&Oacute;','&Uacute;','&aacute;','&eacute;','&iacute;','&oacute;','&uacute;','&Ntilde;','&ntilde;'],['<','>','"',' ','Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], $test->xml);
+		
+		ob_end_clean();
+		header_remove();
+	   
+		header("Content-type: text/xml");
+		header('Content-Desposition: attachment; filename="prueba.xml"');
+		echo $xml;
+		
+		}else{
+		redirect('welcome/');
+		}
+}
+
+
 
 	//Eucario
 	public function addSol(){

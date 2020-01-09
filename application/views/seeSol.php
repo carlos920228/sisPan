@@ -85,6 +85,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
           <tr>
               <th>Descrpción</th>
               <th>Total</th>
+              <th></th>
           </tr>
         </thead>
         <tbody>
@@ -93,7 +94,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "<tr>";
             echo "<td>$user->descripcion</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
-           
+
+            if ($user->estatus==1)
+            {
+            echo '<td><a href="'.base_url().'welcome/downloadxml?id='.$user->idpartidas.'" target="_blank" title="Ver XML"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            }
+            else
+            echo "<td></td>";
+
             echo "</tr>";
           }?> 
         </tbody>

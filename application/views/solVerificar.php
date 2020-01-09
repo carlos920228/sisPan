@@ -125,7 +125,6 @@ Modal para agregar usuario-->
             {
               echo "<td>Factura Valida</td>";
             }*/
-            echo '<td><a href="'.base_url().'welcome/paySol?id='.$user->folio.'" title="Pagar Solicitud"><i class="material-icons green-text center">payment</i></a></td>';
             echo '<td><a href="'.base_url().'welcome/seeSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
           }?> 
 </table>  

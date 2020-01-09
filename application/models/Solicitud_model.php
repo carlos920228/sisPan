@@ -123,6 +123,14 @@ public function get_solicitudVerificar(){
     
 }
 
+
+function get_xml($id){
+    $this->db->where('idpartidas',$id);
+    $this->db->where('estatus',1);
+    $result= $this->db->get('partidas');
+    return $result->row(); 
+}
+
 //Funcion que revisa si el xml ya fue subido por alguien mas
  public function checkxml($foliosat){
         $this->db->where('foliosat',$foliosat);
