@@ -66,15 +66,6 @@ class Solicitud_model extends CI_Model{
         $this->db->where('estado','pendiente');
         $this->db->update('solicitudes');
     }
-    function finSol($id){
-        $this->db->set('estado','validar');//Referencia para que el contador valide la información xml cargados
-        $this->db->where('folio',$id);
-        $this->db->where('estado','pagada');
-        $this->db->update('solicitudes');
-        echo '<script type="text/javascript">
-                        alert("Tarea Guardada");
-                </script>';
-    }
     function paySol($id){
         $this->db->set('estado','pagada');
         $this->db->where('folio',$id);

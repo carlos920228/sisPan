@@ -4,7 +4,7 @@ $fecha=date("Y-m-d");
 ?>
 <title>Administración solicitudes</title>
     <div class="container">
-     <a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>
+     <!--<a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger" href="#modal1"><i class="material-icons">add</i></a>-->
 
   <div id="modal1" class="modal modal">
     <div class="modal-content">

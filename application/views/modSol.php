@@ -134,7 +134,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
         <tbody>
          <?php
          $use=$meta[0];
+         $ok=0;
           foreach ($partidas->result() as $user) {
+            if($user->estatus!='1'){
+              $ok=0;
+            }else{
+              $ok=$user->estatus;
+            }
             echo "<tr>";
             echo "<td>$user->descripcion</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
@@ -148,26 +154,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
 
               if ($user->estatus=="1")
               {
-                echo "<td>XML Vigente</td>";
+                echo '<td class="gren-text"><b>XML Vigente</b></td>';
               }
               else if ($user->estatus=="2")
               {
 
-                echo "<td red-text>pendiente</td>";
-
-                echo "<td>XML Cancelado</td>";
+                echo '<td class="red-text"><b>XML Cancelado</b></td>';
               }
               else if ($user->estatus=="3")
               {
-                echo "<td>Factura Invalida</td>";
+                echo '<td class="red-text"><b>Factura Invalida</b></td>';
               }
               else if ($user->estatus=="4")
               {
-                echo "<td>XML en uso</td>";
+                echo '<td class="red-text"><b>XML en uso</b></td>';
               }
               else if ($user->estatus=="0")
               {
-                echo "<td></td>";
+                echo '<td class="red black-text"><b>Falta comprobante</b></td>';
               }
             }else{
             if($use->estado=='pendiente'){
@@ -179,12 +183,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
       </table> 
       <br>
        <?php 
-       if($use->estado=='pagada'){
-       echo '<a href="'.base_url().'welcome/finSol?id='.$use->folio.'" class="btn-large">Finalizar</a>';}?>
+       if($use->estado=='pagada' and $ok=='1'){
+       echo '<a href="'.base_url().'welcome/verifySol?id='.$use->folio.'" class="btn-large">Finalizar</a>';}
+       if($use->estado=='pagada' and $ok!='1'){
+       echo '<a href="'.base_url().'welcome/verifySol?id='.$use->folio.'" class="btn-large" disabled>Finalizar</a>';}
+       ?>
       </table>
-
-            <a href="<?php echo base_url() ?>welcome/verifySol?id=<?=$use->folio ?>" class="btn waves-effect light-red darken-2">  Comprobar <i class="material-icons right">save</i>
-
         </body>
 
     <!-- Compiled and minified JavaScript -->
