@@ -3,6 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Welcome extends CI_Controller {
 	public $estatus;
+	private $resultado;
 function __construct(){
 		parent::__construct();
 		$this->load->database();
@@ -10,6 +11,8 @@ function __construct(){
 		$this->load->model('Prov_model');
 		$this->load->model('Estruc_model');
 		$this->load->model('Solicitud_model');
+		$this->resultado="";
+		
 	}
 	public function index(){
 		if(isset($_SESSION['username'])){
@@ -345,13 +348,15 @@ public function verificarComprobacion(){
 		}
 }
 
+
+//Funcion que se encarga de descargar los comprobantes en zip
 public function downloadxml(){
 	
 	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 		$test['user']=$this->User_model->data($_SESSION['username']);
 
+		/*
 		$test=$this->Solicitud_model->get_xml($_GET['id']);
-		
 		
 		$xml= str_replace(['&lt;','&gt;','&quot;','&nbsp;','&Aacute;','&Eacute;','&Iacute;','&Oacute;','&Uacute;','&aacute;','&eacute;','&iacute;','&oacute;','&uacute;','&Ntilde;','&ntilde;'],['<','>','"',' ','Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], $test->xml);
 		
@@ -361,7 +366,23 @@ public function downloadxml(){
 		header("Content-type: text/xml");
 		header('Content-Desposition: attachment; filename="prueba.xml"');
 		echo $xml;
-		
+		*/
+			
+		$this->load->library('zip');
+
+		$files = glob('./uploads/'.$_GET['id'].'/*'); // get all file names
+	
+			foreach($files as $file)
+			{ // iterate files
+				  if(is_file($file))
+				  $this->zip->read_file($file);
+
+			}
+
+		//$filename = $this->zip->archive(FCPATH.'/uploads/'.$_GET['id'].'.zip');
+		//echo $filename;
+		$this->zip->download($_GET['id'].'.zip');
+
 		}else{
 		redirect('welcome/');
 		}
@@ -404,165 +425,170 @@ public function downloadxml(){
 
 
 
+
 //funcion que guarda y valida las facturas
-function cargar_factura($id,$folio) {
-
-//$mi_imagen = 'mi_image';
-
-$config = array(
-'file_name' => "prueba.xml",
-'upload_path' => "./uploads/",
-'allowed_types' => "xml",
-'overwrite' => TRUE,
-'max_size' => "4096000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
-//'max_height' => "768",
-//'max_width' => "1024"
-);
-
-    $this->load->library('upload', $config);
-
-    if (!$this->upload->do_upload()) {
-        //*** ocurrio un error
-        $data['uploadError'] = $this->upload->display_errors();
-        echo $this->upload->display_errors();
-        $this->session->set_flashdata('correcto', 'Error al subir el Comprobante Fiscal');
-        return;
-    }
-
-    else
-    {
-      //$this->load->model('Recursos_model');
-      //$this->Recursos_model->update_factura($archivo);
-	  $xml = new SimpleXMLElement ("./uploads/prueba.xml",null,true);
-
-	  //header("Content-Type: text/plain");
-	  //$content = file_get_contents("./uploads/prueba.xml");
-	  $cadena = htmlentities(file_get_contents("./uploads/prueba.xml"));
-	  //echo $content;
-
-      //$namespaces = $xml->getDocNamespaces();
-      $ns = $xml->getNamespaces(true);
-
-if ($xml->getName()=="Comprobante")
-
+function cargar_factura($folio,$idpartida) 
 {
-      $xml->registerXPathNamespace('c', $ns['cfdi']);
-      $xml->registerXPathNamespace('t', $ns['tfd']);
 
-      foreach ($xml->xpath('//cfdi:Comprobante//cfdi:Emisor') as $Emisor)
-      { $emisor = $Emisor['Rfc'];}
+$comprobantes = array();
+$countfiles = count($_FILES['userfile']['name']);
+$this->resultado = "";
 
-      foreach ($xml->xpath('//cfdi:Comprobante//cfdi:Receptor') as $Receptor)
-      { $receptor = $Receptor['Rfc'];}
+$carpeta = './uploads/'.$idpartida;
 
-      foreach ($xml->xpath('//cfdi:Comprobante') as $Comprobante)
-      { $total = $Comprobante['Total'];}
+	if (!file_exists($carpeta)) 
+	{
+    mkdir($carpeta, 0777, true);
+	}
+
+	/*
+	$files = glob('./uploads/'.$idpartida.'/*'); // get all file names
+	foreach($files as $file)
+		{ // iterate files
+  		if(is_file($file))
+    	unlink($file); // delete file
+		}
+	*/
+
+	$config["upload_path"] = './uploads/'.$idpartida;
+	$config["allowed_types"] = 'xml|pdf';
+	$config["overwrite"] = TRUE;
+
+	$this->load->library('upload', $config);
+	$this->upload->initialize($config);
+
+	for($i=0;$i<$countfiles;$i++)
+	{
+		$_FILES['file']['name']     = $_FILES['userfile']['name'][$i];
+		$_FILES['file']['type']     = $_FILES['userfile']['type'][$i];
+		$_FILES['file']['tmp_name'] = $_FILES['userfile']['tmp_name'][$i];
+		$_FILES['file']['error']     = $_FILES['userfile']['error'][$i];
+		$_FILES['file']['size']     = $_FILES['userfile']['size'][$i];
+
+		if($this->upload->do_upload('file'))
+		{
+		  $comprobantes[$i] = $this->upload->data();
+
+		  $this->validar_xml("./uploads/".$idpartida.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida);
+		}
+
+	}
+
+	/*
+$this->load->library('zip');
+
+	for($i=0;$i<count($comprobantes);$i++)
+	{
+		$this->zip->read_file(FCPATH.'/uploads/'.$idpartida.'/'.$comprobantes[$i]['file_name']);
+	}
+
+$this->zip->archive(FCPATH.'/uploads/'.$idpartida.'.zip');
+*/
+
+//echo $this->resultado;
+
+$this->session->set_flashdata('correcto', $this->resultado);
+redirect('welcome/modSol?id='.$folio.'');
+
+
+}
+
+
+
+function validar_xml($file, $folio, $idpartida) 
+{
+	$xml = new SimpleXMLElement ($file,null,true);
+	$cadena = htmlentities(file_get_contents($file));
+	$ns = $xml->getNamespaces(true);
+
+	if ($xml->getName()=="Comprobante")
+	{
+      	$xml->registerXPathNamespace('c', $ns['cfdi']);
+      	$xml->registerXPathNamespace('t', $ns['tfd']);
+
+      	foreach ($xml->xpath('//cfdi:Comprobante//cfdi:Emisor') as $Emisor)
+      	{ $emisor = $Emisor['Rfc'];}
+
+      	foreach ($xml->xpath('//cfdi:Comprobante//cfdi:Receptor') as $Receptor)
+      	{ $receptor = $Receptor['Rfc'];}
+
+      	foreach ($xml->xpath('//cfdi:Comprobante') as $Comprobante)
+      	{ $total = $Comprobante['Total'];}
  
-      foreach ($xml->xpath('//t:TimbreFiscalDigital') as $tfd) 
-      { $uuid= $tfd['UUID'];} 
+      	foreach ($xml->xpath('//t:TimbreFiscalDigital') as $tfd) 
+      	{ $uuid= $tfd['UUID'];} 
 
 
-      $soap = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body><tem:Consulta><tem:expresionImpresa>?re='.$emisor.'&amp;rr='.$receptor.'&amp;tt='.$total.'&amp;id='.$uuid.'</tem:expresionImpresa></tem:Consulta></soapenv:Body></soapenv:Envelope>';
+    	$soap = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body><tem:Consulta><tem:expresionImpresa>?re='.$emisor.'&amp;rr='.$receptor.'&amp;tt='.$total.'&amp;id='.$uuid.'</tem:expresionImpresa></tem:Consulta></soapenv:Body></soapenv:Envelope>';
 
-      $headers = 
+    	$headers = 
                 ['Content-Type: text/xml;charset=utf-8',
                  'SOAPAction: http://tempuri.org/IConsultaCFDIService/Consulta',
                  'Content-length: '.strlen($soap)];
 
-      $url = 'https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc';
-      $ch = curl_init();
+    	$url = 'https://consultaqr.facturaelectronica.sat.gob.mx/ConsultaCFDIService.svc';
+	
+		$ch = curl_init();
 
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $soap);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_URL, $url);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    	curl_setopt($ch, CURLOPT_POST, true);
+    	curl_setopt($ch, CURLOPT_POSTFIELDS, $soap);
+    	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
-      $res = curl_exec($ch);
-             curl_close($ch);
+      	$res = curl_exec($ch);
+        curl_close($ch);
 
-      $xml = simplexml_load_string($res);
-      $data = $xml->children('s', true)->children('', true)->children('', true);
-      $data = json_encode($data->children('a', true), JSON_UNESCAPED_UNICODE);
-      $obj = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data), true );
+      	$xml = simplexml_load_string($res);
+      	$data = $xml->children('s', true)->children('', true)->children('', true);
+      	$data = json_encode($data->children('a', true), JSON_UNESCAPED_UNICODE);
+      	$obj = json_decode( preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data), true );
 
-      $valido = $obj['Estado'];
+      	$valido = $obj['Estado'];
 
-      if ($valido=="Vigente")
-      {
-        //$this->session->set_flashdata('correcto', 'El Comprobante Fiscal es Valido');
-		//echo "El Comprobante Fiscal es Valido";
+      	if ($valido=="Vigente")
+      	{
+			if ($this->Solicitud_model->checkxml($uuid))
+			{
+				$datos = $this->Solicitud_model->checksolicitud($folio);
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " en la Solicitud Folio: " . $folio . "<br>";
+				unlink($file);
+			}
+			else
+			{
+				$this->Solicitud_model->emisor=$emisor;
+				$this->Solicitud_model->receptor=$receptor;
+				$this->Solicitud_model->total=$total;
+				$this->Solicitud_model->folio=$uuid;
+	
+				//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
+				$this->Solicitud_model->xml=$cadena;
+				$this->Solicitud_model->estatus=1;
+	
+				$this->Solicitud_model->updatepartida($folio,$idpartida);
+
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
+			}
 		
-		if ($this->Solicitud_model->checkxml($uuid))
-		{
-			$this->Solicitud_model->emisor="";
-			$this->Solicitud_model->receptor="";
-			$this->Solicitud_model->total="";
-			$this->Solicitud_model->folio="";
-	
-			//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-			$this->Solicitud_model->xml="";
-			$this->Solicitud_model->estatus=4;
-	
-			$this->Solicitud_model->updatepartida($folio);
-		}
-		else
-		{
-			$this->Solicitud_model->emisor=$emisor;
-			$this->Solicitud_model->receptor=$receptor;
-			$this->Solicitud_model->total=$total;
-			$this->Solicitud_model->folio=$uuid;
-	
-			//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-			$this->Solicitud_model->xml=$cadena;
-			$this->Solicitud_model->estatus=1;
-	
-			$this->Solicitud_model->updatepartida($folio);
-		}
-		
-      }
-      else if ($valido=="Cancelado")
-      {
-        //$this->session->set_flashdata('error', 'El Comprobante Fiscal es Invalido');
-		//echo "El Comprobante Fiscal es Invalido";
-		$this->Solicitud_model->emisor="";
-		$this->Solicitud_model->receptor="";
-		$this->Solicitud_model->total=0;
-		$this->Solicitud_model->folio="";
-
-		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-		$this->Solicitud_model->xml="";
-		$this->Solicitud_model->estatus=2;
-
-		$this->Solicitud_model->updatepartida($folio);
-		
-      }
-}
-
-else
-      {
-        //$this->session->set_flashdata('error', 'El XML no es un Comprobante Fiscal');
-		//echo "El XML no es un Comprobante Fiscal";
-		$this->Solicitud_model->emisor="";
-		$this->Solicitud_model->receptor="";
-		$this->Solicitud_model->total=0;
-		$this->Solicitud_model->folio="";
-
-		//leer el xml y guardarlo como una cadena para evitar guardar los archivos en el servidor
-		$this->Solicitud_model->xml="";
-		$this->Solicitud_model->estatus=3;
-
-		$this->Solicitud_model->updatepartida($folio);
-        $this->estatus=0;
-      }
+      	}
+      	else if ($valido=="Cancelado")
+      	{
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal Cancelado". "<br>";
+			unlink($file);	
+      	}
+	}
+	else
+      	{
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." no es un Comprobante Fiscal Valido". "<br>";
+			unlink($file);	
+      	}
       
-      redirect('welcome/modSol?id='.$id.'');
-
-    }
-
-
 }
+
+
+
+
 
 }

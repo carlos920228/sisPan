@@ -122,12 +122,20 @@ function get_xml($id){
     return $result->row(); 
 }
 
-//Funcion que revisa si el xml ya fue subido por alguien mas
+
+//Consulta que revisa si el xml ya fue subido por alguien mas
  public function checkxml($foliosat){
         $this->db->where('foliosat',$foliosat);
-        $result= $this->db->get('partidas');
-        return $result->result(); 
-    }
+        $result= $this->db->get('comprobantes');
+        return $result->row(); 
+}
+
+//Consulta que obtiene los datos de la persona que ya tiene en uso un xml
+public function checksolicitud($folio){
+    $this->db->where('folio',$folio);
+    $result= $this->db->get('solicitudes');
+    return $result->row(); 
+}
 
 //Funcion que cambia el estatus de la solicitud a verificar para validar que los xml subidos sean correctos
 public function verifySol($id){
@@ -148,9 +156,11 @@ public function verifySol($id){
 }
 
 //Funcion que agrega a la partida los datos del xml validado
-public function updatepartida($id){
+public function updatepartida($folio,$idpartida){
     $this->db->trans_begin();
 
+    $this->db->set('folio', $folio);
+    $this->db->set('idpartida', $idpartida);
     $this->db->set('emisor', $this->emisor);
     $this->db->set('receptor', $this->receptor);
     $this->db->set('totalfactura', $this->total);
@@ -158,8 +168,14 @@ public function updatepartida($id){
     $this->db->set('xml', $this->xml);
     $this->db->set('estatus', $this->estatus);
 
-    $this->db->where('idpartidas', $id);
+    $this->db->insert('comprobantes');
+
+    $this->db->set('comprobado', 'comprobado + '.$this->total.'', FALSE);
+    $this->db->where('idpartidas', $idpartida);
     $this->db->update('partidas');
+
+    //$this->db->where('idpartidas', $id);
+    //$this->db->update('partidas');
 
     if ($this->db->trans_status() === FALSE){
         $this->db->trans_rollback();

@@ -129,6 +129,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
           <tr>
               <th>Descripción</th>
               <th>Total</th>
+              <th>Subtotal</th>
           </tr>
         </thead>
         <tbody>
@@ -144,35 +145,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "<tr>";
             echo "<td>$user->descripcion</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
+            echo "<td><b>".number_format($user->comprobado, 2, '.', ',')."</b></td>";
             if($use->estado!=='pendiente' && $use->estado!=='cancelada' && $use->estado!=='aceptada'){
               echo "
               <td>
               <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <input type='file' class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile' id='factura_recurso' size='20' accept='.xml' onchange='form.submit()'/>
+              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile[]' id='factura_recurso' size='20' accept='.xml' onchange='form.submit()'/>
               </form>
               </td>";
 
-              if ($user->estatus=="1")
-              {
-                echo '<td class="gren-text"><b>XML Vigente</b></td>';
-              }
-              else if ($user->estatus=="2")
-              {
-
-                echo '<td class="red-text"><b>XML Cancelado</b></td>';
-              }
-              else if ($user->estatus=="3")
-              {
-                echo '<td class="red-text"><b>Factura Invalida</b></td>';
-              }
-              else if ($user->estatus=="4")
-              {
-                echo '<td class="red-text"><b>XML en uso</b></td>';
-              }
-              else if ($user->estatus=="0")
-              {
-                echo '<td class="red black-text"><b>Falta comprobante</b></td>';
-              }
             }else{
             if($use->estado=='pendiente'){
             echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">delete</i></td>';}
@@ -189,6 +170,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
        echo '<a href="'.base_url().'welcome/verifySol?id='.$use->folio.'" class="btn-large" disabled>Finalizar</a>';}
        ?>
       </table>
+
+<br>
+<br>
+<div class="form-group">
+<?php if($this->session->flashdata('correcto')){?>
+<?php echo $this->session->flashdata('correcto')?>
+<?php }?>
+</div>
+
         </body>
 
     <!-- Compiled and minified JavaScript -->
