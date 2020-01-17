@@ -97,7 +97,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
 
             if ($user->estatus==1)
             {
-            echo '<td><a href="'.base_url().'welcome/downloadxml?id='.$user->idpartidas.'" target="_blank" title="Descargar Comprobantes"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            //echo '<td><a href="'.base_url().'welcome/downloadxml?id='.$user->idpartidas.'" target="_blank" title="Descargar Comprobantes"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
             }
             else
             echo "<td></td>";

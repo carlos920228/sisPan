@@ -130,6 +130,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               <th>Descripción</th>
               <th>Total</th>
               <th>Subtotal</th>
+              <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -147,15 +148,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
             echo "<td><b>".number_format($user->comprobado, 2, '.', ',')."</b></td>";
             if($use->estado!=='pendiente' && $use->estado!=='cancelada' && $use->estado!=='aceptada'){
+              echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'" title="No utilicé" <i class="material-icons blue-text center">visibility_off</i>';
+              echo '<a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'" title="Reintegro" <i class="material-icons blue-text center">monetization_on</i></td>';
               echo "
               <td>
               <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile[]' id='factura_recurso' size='20' accept='.xml' onchange='form.submit()'/>
+              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile[]' id='factura_recurso' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
               </form>
               </td>";
 
             }else{
             if($use->estado=='pendiente'){
+              echo "<td></td>";
             echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">delete</i></td>';}
             }
             echo "</tr>";

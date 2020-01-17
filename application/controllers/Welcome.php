@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Welcome extends CI_Controller {
 	public $estatus;
 	private $resultado;
+	private $pdfdoc = array();
+
 function __construct(){
 		parent::__construct();
 		$this->load->database();
@@ -349,6 +351,52 @@ public function verificarComprobacion(){
 }
 
 
+
+
+
+
+	//Eucario
+	public function addSol(){
+		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
+			$test['user']=$this->User_model->data($_SESSION['username']);
+
+    if ($_FILES['userfile']['error'] == UPLOAD_ERR_NO_FILE)
+    {
+    	echo "Error al subir la factura";
+    }
+    else
+    {
+      $this->cargar_factura();
+
+      $this->Solicitud_model->fecha = $this->input->post('Fecha');
+  	  $this->Solicitud_model->nombre = $this->input->post('Nombre');
+      $this->Solicitud_model->area = $this->input->post('area');
+      $this->Solicitud_model->comision = $this->input->post('denominacion_comision');
+      $this->Solicitud_model->c_origen = $this->input->post('ciudad_origen');
+      $this->Solicitud_model->e_origen = $this->input->post('estado_origen');
+      $this->Solicitud_model->c_destino = $this->input->post('ciudad_destino');
+  	  $this->Solicitud_model->e_destino = $this->input->post('estado_destino');
+  	  //$this->solicitud_model->archivo = $this->input->post('userfile');
+      $this->Solicitud_model->estatus = $this->estatus;
+
+      $this->Solicitud_model->add_sol($_POST);
+    }
+
+			redirect('welcome/verSolicitudes');
+			}else{
+		redirect('welcome');
+		}
+	}
+
+
+//Funcion que se encarga de generar el pdf
+public function viewpdf(){
+	
+
+		
+}
+
+
 //Funcion que se encarga de descargar los comprobantes en zip
 public function downloadxml(){
 	
@@ -389,44 +437,7 @@ public function downloadxml(){
 }
 
 
-
-	//Eucario
-	public function addSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-
-    if ($_FILES['userfile']['error'] == UPLOAD_ERR_NO_FILE)
-    {
-    	echo "Error al subir la factura";
-    }
-    else
-    {
-      $this->cargar_factura();
-
-      $this->Solicitud_model->fecha = $this->input->post('Fecha');
-  	  $this->Solicitud_model->nombre = $this->input->post('Nombre');
-      $this->Solicitud_model->area = $this->input->post('area');
-      $this->Solicitud_model->comision = $this->input->post('denominacion_comision');
-      $this->Solicitud_model->c_origen = $this->input->post('ciudad_origen');
-      $this->Solicitud_model->e_origen = $this->input->post('estado_origen');
-      $this->Solicitud_model->c_destino = $this->input->post('ciudad_destino');
-  	  $this->Solicitud_model->e_destino = $this->input->post('estado_destino');
-  	  //$this->solicitud_model->archivo = $this->input->post('userfile');
-      $this->Solicitud_model->estatus = $this->estatus;
-
-      $this->Solicitud_model->add_sol($_POST);
-    }
-
-			redirect('welcome/verSolicitudes');
-			}else{
-		redirect('welcome');
-		}
-	}
-
-
-
-
-//funcion que guarda y valida las facturas
+//funcion que sube los xml al servidor
 function cargar_factura($folio,$idpartida) 
 {
 
@@ -434,7 +445,7 @@ $comprobantes = array();
 $countfiles = count($_FILES['userfile']['name']);
 $this->resultado = "";
 
-$carpeta = './uploads/'.$idpartida;
+$carpeta = './uploads/'.$folio;
 
 	if (!file_exists($carpeta)) 
 	{
@@ -450,7 +461,7 @@ $carpeta = './uploads/'.$idpartida;
 		}
 	*/
 
-	$config["upload_path"] = './uploads/'.$idpartida;
+	$config["upload_path"] = './uploads/'.$folio;
 	$config["allowed_types"] = 'xml|pdf';
 	$config["overwrite"] = TRUE;
 
@@ -467,9 +478,12 @@ $carpeta = './uploads/'.$idpartida;
 
 		if($this->upload->do_upload('file'))
 		{
-		  $comprobantes[$i] = $this->upload->data();
+		  	$comprobantes[$i] = $this->upload->data();
 
-		  $this->validar_xml("./uploads/".$idpartida.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida);
+			if ($comprobantes[$i]['file_type']=="text/xml")
+			{
+		  		$this->validar_xml("./uploads/".$folio.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida);
+			}
 		}
 
 	}
@@ -485,8 +499,6 @@ $this->load->library('zip');
 $this->zip->archive(FCPATH.'/uploads/'.$idpartida.'.zip');
 */
 
-//echo $this->resultado;
-
 $this->session->set_flashdata('correcto', $this->resultado);
 redirect('welcome/modSol?id='.$folio.'');
 
@@ -494,7 +506,7 @@ redirect('welcome/modSol?id='.$folio.'');
 }
 
 
-
+//Funcion que valida los xml y verifica su estatus
 function validar_xml($file, $folio, $idpartida) 
 {
 	$xml = new SimpleXMLElement ($file,null,true);
@@ -553,7 +565,7 @@ function validar_xml($file, $folio, $idpartida)
 			if ($this->Solicitud_model->checkxml($uuid))
 			{
 				$datos = $this->Solicitud_model->checksolicitud($folio);
-				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " en la Solicitud Folio: " . $folio . "<br>";
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
 				unlink($file);
 			}
 			else
@@ -569,19 +581,19 @@ function validar_xml($file, $folio, $idpartida)
 	
 				$this->Solicitud_model->updatepartida($folio,$idpartida);
 
-				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
 			}
 		
       	}
       	else if ($valido=="Cancelado")
       	{
-			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." es un Comprobante Fiscal Cancelado". "<br>";
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal Cancelado". "<br>";
 			unlink($file);	
       	}
 	}
 	else
       	{
-			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$idpartida."/","",$file) ." no es un Comprobante Fiscal Valido". "<br>";
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." no es un Comprobante Fiscal Valido". "<br>";
 			unlink($file);	
       	}
       
