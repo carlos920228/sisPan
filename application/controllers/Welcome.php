@@ -49,44 +49,50 @@ function __construct(){
 		$this->session->sess_destroy();
 		redirect('welcome');
 	}
-	
-	public function generarSolicitud(){
-		if(isset($_SESSION['username'])){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$this->load->view('menu',$test);
-			$this->load->view('solPropia');
-		}else{
-		$this->load->view('loginv2');
-		}
+
+
+
+//Funcion que muestra el listado de mis solicitudes
+public function verMisSolicitudes()
+{
+	if(isset($_SESSION['username']))
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$user=$test['user'];
+		$use=$user[0];
+		$name=$use->nombre." ".$use->apellidos;
+		$test['pendientes']=$this->Solicitud_model->get_solUserPenWait($name,'pendiente');
+		$test['canceladas']=$this->Solicitud_model->get_solUserPenWait($name,'cancelada');
+		$test['aceptadas']=$this->Solicitud_model->get_solUserPenWait($name,'aceptada');
+		$test['pagadas']=$this->Solicitud_model->get_solUserPenWait($name,'pagada');
+		$test['finalizadas']=$this->Solicitud_model->get_solUserPenWait($name,'finalizadas');
+		$this->load->view('menu',$test);
+		$this->load->view('solicitudes',$test);
 	}
-	public function verMisSolicitudes(){
-		if(isset($_SESSION['username'])){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$user=$test['user'];
-			$use=$user[0];
-			$name=$use->nombre." ".$use->apellidos;
-			$test['pendientes']=$this->Solicitud_model->get_solUserPenWait($name,'pendiente');
-			$test['canceladas']=$this->Solicitud_model->get_solUserPenWait($name,'cancelada');
-			$test['aceptadas']=$this->Solicitud_model->get_solUserPenWait($name,'aceptada');
-			$test['pagadas']=$this->Solicitud_model->get_solUserPenWait($name,'pagada');
-			$test['finalizadas']=$this->Solicitud_model->get_solUserPenWait($name,'finalizadas');
-			$this->load->view('menu',$test);
-			$this->load->view('solicitudes',$test);
-			
-		}else{
+	else
+	{
 		$this->load->view('loginv2');
-		}
 	}
-	public function verSolicitudes(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$this->load->view('menu',$test);
-			$test['data']=$this->Solicitud_model->get_solicitud();
-			$this->load->view('crudSol',$test);
-		}else{
+}
+
+
+//Funcion que muestra las solicitudes (Administrador)
+public function verSolicitudes()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']>=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$this->load->view('menu',$test);
+		$test['data']=$this->Solicitud_model->get_solicitud();
+		$this->load->view('crudSol',$test);
+	}
+	else
+	{
 		$this->load->view('loginv2');
-		}
 	}
+}
+
+
 	public function verProveedores(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
 			$test['user']=$this->User_model->data($_SESSION['username']);
@@ -213,32 +219,84 @@ public function addEstructuras(){
 		}
 	}
 
-	public function detalleSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			redirect('welcome/modSol?id='.$this->Solicitud_model->addMetadata($_POST));
-		}else{
-		redirect('welcome');
-		}
+
+//Funcion que genera una nueva solicitud de viaticos
+public function generarSolicitud()
+{
+	if(isset($_SESSION['username']))
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$this->load->view('menu',$test);
+		$this->load->view('solPropia');
 	}
-	public function modSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$use=$test['user'];
-			$name=$use[0]->nombre." ".$use[0]->apellidos;
-			$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
-			$meta=$test['meta'];
+	else
+	{
+		$this->load->view('loginv2');
+	}
+}
+
+
+//Funcion que guarda la solicitud de viaticos y redirige para agregar las partidas	
+public function addSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		redirect('welcome/generarSolicitudPartidas?id='.$this->Solicitud_model->addMetadata($_POST));
+	}
+	else
+	{
+		redirect('welcome');
+	}
+}
+
+//Funcion que agrega las partidas de la solicitud de viaticos
+public function generarSolicitudPartidas(){
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$use=$test['user'];
+		$name=$use[0]->nombre." ".$use[0]->apellidos;
+		$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
+		$meta=$test['meta'];
+		if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
+			redirect('welcome/verMisSolicitudes');
+		}
+		$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
+		$this->load->view('menu',$test);
+		$this->load->view('createSol',$test);
+
+	}else{
+	redirect('welcome');
+	}
+}
+
+//Funcion que realiza la comprobacion de la solicitud de viaticos
+public function comprobarSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$use=$test['user'];
+		$name=$use[0]->nombre." ".$use[0]->apellidos;
+		$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
+		$test['aux']=$this->Solicitud_model->validatePartida($_GET['id']);
+		$meta=$test['meta'];
 			if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
 				redirect('welcome/verMisSolicitudes');
 			}
-			$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
-			$this->load->view('menu',$test);
-			$this->load->view('modSol',$test);
+		
+		$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
+		$this->load->view('menu',$test);
+		$this->load->view('modSol',$test);
 
-		}else{
-		redirect('welcome');
-		}
 	}
+	else
+	{
+		redirect('welcome');
+	}
+}
+
+
 	public function finSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 				$this->Solicitud_model->finSol($_GET['id']);
@@ -247,21 +305,29 @@ public function addEstructuras(){
 		redirect('welcome');
 		}
 	}
-	public function seeSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$use=$test['user'];
-			$name=$use[0]->nombre." ".$use[0]->apellidos;
-			$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
-			$meta=$test['meta'];
-			$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
-			$this->load->view('menu',$test);
-			$this->load->view('seeSol',$test);
 
-		}else{
-		redirect('welcome');
-		}
+
+//Funcion que vizualiza la informacion de una solicitud
+public function detalleSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']>=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$use=$test['user'];
+		$name=$use[0]->nombre." ".$use[0]->apellidos;
+		$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
+		$meta=$test['meta'];
+		$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
+		$this->load->view('menu',$test);
+		$this->load->view('seeSol',$test);
 	}
+	else
+	{
+	redirect('welcome');
+	}
+}
+
+
 	public function deleteSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 			$this->Solicitud_model->deleteSol($_GET['id']);
@@ -297,44 +363,91 @@ public function paySol(){
 
 
 //Funcion que envia las solicitudes para la verificacion de los xml
-	public function verifySol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->Solicitud_model->verifySol($_GET['id']);
-			redirect('welcome/verMisSolicitudes');
-		}else{
-			redirect('welcome');
-		}
+public function verifySol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->verifySol($_GET['id']);
+		redirect('welcome/verMisSolicitudes');
 	}
+	else
+	{
+		redirect('welcome');
+	}
+}
+
+//Funcion que agrega las partidas de la solicitud de viaticos
+public function addPartida()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->addPartida($_POST);
+		$this->Solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
+		redirect('welcome/generarSolicitudPartidas?id='.$_POST['solicitudes_folio']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
+//Funcion que permite eliminar partidas de la solicitud de viaticos
+public function restSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
+		redirect('welcome/generarSolicitudPartidas?id='.$_GET['id']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
+//Funcion que permite reembolsa partidas de la solicitud de viaticos
+public function nousarSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->notusePartida($_GET['to']);
+		redirect('welcome/comprobarSol?id='.$_GET['id']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
+//Funcion que permite reembolsa partidas de la solicitud de viaticos
+public function reembolsarSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->refundPartida($_GET['to']);
+		redirect('welcome/comprobarSol?id='.$_GET['id']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
 
 
-	public function addPartida(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->Solicitud_model->addPartida($_POST);
-			$this->Solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
-			redirect('welcome/modSol?id='.$_POST['solicitudes_folio']);
-		}else{
-		redirect('welcome/');
-		}
+public function pagarSolicitudes()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$this->load->view('menu',$test);
+		$test['data']=$this->Solicitud_model->get_solicitudPagar();
+		$this->load->view('solPagar',$test);
 	}
-	public function restSol(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$this->Solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
-			redirect('welcome/modSol?id='.$_GET['id']);
-		}else{
+	else
+	{
 		redirect('welcome/');
-		}
 	}
-
-	public function pagarSolicitudes(){
-		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
-			$test['user']=$this->User_model->data($_SESSION['username']);
-			$this->load->view('menu',$test);
-			$test['data']=$this->Solicitud_model->get_solicitudPagar();
-			$this->load->view('solPagar',$test);
-		}else{
-		redirect('welcome/');
-		}
-	}
+}
 
 
 public function verificarComprobacion(){
@@ -356,7 +469,7 @@ public function verificarComprobacion(){
 
 
 	//Eucario
-	public function addSol(){
+	public function addSolfactura(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']>=1){
 			$test['user']=$this->User_model->data($_SESSION['username']);
 
@@ -392,7 +505,108 @@ public function verificarComprobacion(){
 //Funcion que se encarga de generar el pdf
 public function viewpdf(){
 	
+	$test=$this->Solicitud_model->getMetadata($_GET['id'],"");
+	$test2['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
 
+	$this->load->library('pdf');
+	$html = '
+	<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>Solicitud de Viaticos</title>
+  </head>
+  <body>
+
+  <h1 class="text-center bg-info">Solicitud de Viaticos</h1>
+
+  <div class="form-group row">
+  <div class="col-xs-2">
+    <label for="ex1">Folio</label>
+    <input class="form-control input-sm" id="ex1" type="text">
+  </div>
+  <div class="col-xs-3">
+    <label for="ex2">Fecha de Solicitud</label>
+    <input class="form-control input-sm" id="ex2" type="text">
+  </div>
+  <div class="col-xs-6">
+    <label for="ex3">Nombre del Solicitante</label>
+    <input class="form-control input-sm" id="ex3" type="text">
+  </div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-4">
+  <label for="ex1">Area del Solicitante</label>
+  <input class="form-control input-sm" id="ex1" type="text">
+</div>
+<div class="col-xs-7">
+  <label for="ex2">Comisión</label>
+  <input class="form-control input-sm" id="ex2" type="text">
+</div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-3">
+  <label for="ex1">Ciudad Origen</label>
+  <input class="form-control input-sm" id="ex1" type="text">
+</div>
+<div class="col-xs-2">
+  <label for="ex2">Estado Origen</label>
+  <input class="form-control input-sm" id="ex2" type="text">
+</div>
+<div class="col-xs-3">
+  <label for="ex3">Ciudad Destino</label>
+  <input class="form-control input-sm" id="ex3" type="text">
+</div>
+<div class="col-xs-2">
+  <label for="ex3">Estado Destino</label>
+  <input class="form-control input-sm" id="ex3" type="text">
+</div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-">
+  <label for="ex1">Secretaria</label>
+  <input class="form-control input-sm" id="ex1" type="text">
+</div>
+<div class="col-xs-6">
+  <label for="ex2">Motivo</label>
+  <input class="form-control input-sm" id="ex2" type="text">
+</div>
+<div class="col-xs-2">
+  <label for="ex3">Total</label>
+  <input class="form-control input-sm" id="ex3" type="text">
+</div>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Descripción</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>Gasolina</td>
+            <td>$500.00</td>
+        </tr>
+        <tbody>
+</table>
+
+</body>
+</html>
+	';
+
+    $this->pdf->generate($html, 'prueba', true, 'Letter', 'portrait');
 		
 }
 
@@ -402,33 +616,23 @@ public function downloadxml(){
 	
 	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
 		$test['user']=$this->User_model->data($_SESSION['username']);
-
-		/*
-		$test=$this->Solicitud_model->get_xml($_GET['id']);
-		
-		$xml= str_replace(['&lt;','&gt;','&quot;','&nbsp;','&Aacute;','&Eacute;','&Iacute;','&Oacute;','&Uacute;','&aacute;','&eacute;','&iacute;','&oacute;','&uacute;','&Ntilde;','&ntilde;'],['<','>','"',' ','Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], $test->xml);
-		
-		ob_end_clean();
-		header_remove();
-	   
-		header("Content-type: text/xml");
-		header('Content-Desposition: attachment; filename="prueba.xml"');
-		echo $xml;
-		*/
-			
+	
 		$this->load->library('zip');
 
+		/*
+		$path = './uploads/'.$_GET['id'].'/';
+		$this->zip->read_dir($path);
+		$this->zip->download('my_backup.zip');
+		*/
 		$files = glob('./uploads/'.$_GET['id'].'/*'); // get all file names
 	
 			foreach($files as $file)
-			{ // iterate files
-				  if(is_file($file))
-				  $this->zip->read_file($file);
-
+			{ 
+				if(is_file($file))
+				$this->zip->read_file($file);
 			}
 
-		//$filename = $this->zip->archive(FCPATH.'/uploads/'.$_GET['id'].'.zip');
-		//echo $filename;
+		$filename = $this->zip->archive(FCPATH.'/uploads/'.$_GET['id'].'.zip');
 		$this->zip->download($_GET['id'].'.zip');
 
 		}else{
@@ -500,7 +704,49 @@ $this->zip->archive(FCPATH.'/uploads/'.$idpartida.'.zip');
 */
 
 $this->session->set_flashdata('correcto', $this->resultado);
-redirect('welcome/modSol?id='.$folio.'');
+redirect('welcome/comprobarSol?id='.$folio.'');
+
+
+}
+
+
+//funcion que sube los xml al servidor
+function cargar_reembolso($folio,$idpartida) 
+{
+
+$comprobantes = array();
+$countfiles = count($_FILES['userfile']['name']);
+
+$carpeta = './uploads/'.$folio.'/'.$idpartida;
+
+	if (!file_exists($carpeta)) 
+	{
+    mkdir($carpeta, 0777, true);
+	}
+
+	$config["upload_path"] = './uploads/'.$folio.'/'.$idpartida;
+	$config["allowed_types"] = 'pdf';
+	$config["overwrite"] = TRUE;
+
+	$this->load->library('upload', $config);
+	$this->upload->initialize($config);
+
+	for($i=0;$i<$countfiles;$i++)
+	{
+		$_FILES['file']['name']     = $_FILES['userfile']['name'][$i];
+		$_FILES['file']['type']     = $_FILES['userfile']['type'][$i];
+		$_FILES['file']['tmp_name'] = $_FILES['userfile']['tmp_name'][$i];
+		$_FILES['file']['error']     = $_FILES['userfile']['error'][$i];
+		$_FILES['file']['size']     = $_FILES['userfile']['size'][$i];
+
+		if($this->upload->do_upload('file'))
+		{
+		  	$comprobantes[$i] = $this->upload->data();
+		}
+
+	}
+
+redirect('welcome/comprobarSol?id='.$folio.'');
 
 
 }
@@ -565,8 +811,13 @@ function validar_xml($file, $folio, $idpartida)
 			if ($this->Solicitud_model->checkxml($uuid))
 			{
 				$datos = $this->Solicitud_model->checksolicitud($folio);
-				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
-				unlink($file);
+
+				if ($datos->folio!=$folio)
+				{
+					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
+					unlink($file);
+				}
+				
 			}
 			else
 			{

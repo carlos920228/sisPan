@@ -10,31 +10,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
         ?>
       <div class="row">
           <div class="row modal-form-row">
-            <div class="input-field col s2">
+            <div class="input-field col s3">
+              <input id="Fecha" type="text" name="Fecha" 
+              <?php $use=$meta[0];
+               echo 'value="'.$use->folio.'"';?> readonly>
+              <label for="Fecha">No Folio</label>
+            </div>
+            <div class="input-field col s3">
               <input id="Fecha" type="date" name="Fecha" 
               <?php $use=$meta[0];
                echo 'value="'.$use->Fecha.'"';?> readonly>
               <label for="Fecha">Fecha de Solicitud</label>
             </div>
-            <div class="input-field col s4">
+            <div class="input-field col s6">
               <input id="Nombre" name="Nombre" type="text"
               <?php $use=$meta[0];
                echo 'value="'.$use->Nombre.'"';?> readonly>
               <label for="Nombre">Nombre del Solicitante</label>
             </div>
-            <div class="input-field col s3">
+          </div>
+
+          <div class="row">
+          <div class="input-field col s3">
               <input id="area" type="text" name="area"
               <?php $use=$meta[0];
                echo 'value="'.$use->area.'"';?> readonly>
-              <label for="area">Area del Solicitante</label>
+              <label for="area">Area</label>
             </div>
             <div class="input-field col s3">
-              <input id="denominacion_comision" name="denominacion_comision" type="text" 
+              <input id="ciudad_origen" type="text" name="ciudad_origen" 
               <?php $use=$meta[0];
-               echo 'value="'.$use->denominacion_comision.'"';?> readonly>
-              <label for="denominacion_comision">Comisión</label>
+              if ($use->tipo_sol==0)
+               {echo 'value="Viaticos"';}
+               else {echo 'value="Reembolso"';} ?> readonly>
+              <label for="ciudad_origen">Tipo de Solicitud</label>
             </div>
-          </div>       
+          </div>
+
           <div class="row">
             <div class="input-field col s3">
               <input id="ciudad_origen" type="text" name="ciudad_origen" 
@@ -61,17 +73,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               <label for="estado_destino">Estado Destino</label>
             </div>
           </div>
+
           <div class="row">
-             <div class="input-field col s3">
-              <input id="estado_destino" name="estado_destino" type="text"
-              <?php $use=$meta[0];
-               echo 'value="'.$use->secretaria.'"';?> readonly>
-              <label for="estado_destino">Secretaría</label>
-            </div>
-            <div class="input-field col s6">
+            <div class="input-field col s9">
               <input id="motivo" name="motivo" type="text" <?php $use=$meta[0];
                echo 'value="'.$use->motivo.'"';?> readonly>
-              <label for="motivo">Motivo</label>            
+              <label for="motivo">Actividad</label>            
             </div>
             <div class="input-field col s3">
               <input id="total" name="total" type="text" <?php $use=$meta[0];

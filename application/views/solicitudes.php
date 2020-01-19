@@ -26,8 +26,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "<td>$user->Fecha</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
             echo "<td>$user->motivo</td>";
-            echo '<td><a href="'.base_url().'welcome/modSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
-            echo '<td><a href="'.base_url().'welcome/deleteSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons red-text center">delete</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/generarSolicitudPartidas?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/deleteSol?id='.$user->folio.'" title="Eliminar Solicitud"><i class="material-icons red-text center">delete</i></a></td>';
             echo "</tr>";
           }?>
     </table>  
@@ -46,7 +46,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "<td>$user->Fecha</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
             echo "<td>$user->motivo</td>";
-            echo '<td><a href="'.base_url().'welcome/modSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/detalleSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
             echo "</tr>";
           }?>
     </table>  
@@ -65,7 +65,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "<td>$user->Fecha</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
             echo "<td>$user->motivo</td>";
-            echo '<td><a href="'.base_url().'welcome/modSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/comprobarSol?id='.$user->folio.'" title="Comprobar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
             echo "</tr>";
           }?>
     </table>  

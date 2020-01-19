@@ -25,6 +25,7 @@ class Solicitud_model extends CI_Model{
     }
     function getPartidas($id){
         $this->db->where('solicitudes_folio',$id);
+        $this->db->order_by('descripcion', 'ASC');
         $result= $this->db->get('partidas');
         return $result; 
     }
@@ -41,6 +42,7 @@ class Solicitud_model extends CI_Model{
          $this->db->where('idpartidas', $partida);
          $this->db->delete('partidas');
     }
+
     function addMetadata($data){
         If(!$this->db->insert('solicitudes',$data)){
             return $error = $this->db->error();
@@ -48,6 +50,7 @@ class Solicitud_model extends CI_Model{
         $insert_id = $this->db->insert_id();
         return  $insert_id;
     }
+
     function deleteSol($id){
         $this->db->set('estado',0);
         $this->db->where('folio',$id);
@@ -114,12 +117,12 @@ public function get_solicitudVerificar(){
     
 }
 
-
-function get_xml($id){
-    $this->db->where('idpartidas',$id);
-    $this->db->where('estatus',1);
+//
+function validatePartida($folio){
+    $this->db->where('solicitudes_folio',$folio);
+    $this->db->order_by('estatus', 'DESC');
     $result= $this->db->get('partidas');
-    return $result->row(); 
+    return $result->result(); 
 }
 
 
@@ -155,6 +158,42 @@ public function verifySol($id){
     }
 }
 
+//Funcion para no utilizar una partida
+public function notusePartida($idpartida){
+    $this->db->trans_begin();
+
+    $this->db->set('documentado',0);
+    $this->db->set('estatus',3);
+    $this->db->where('idpartidas',$idpartida);
+    $this->db->update('partidas');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+    }else{
+        $this->db->trans_commit();
+        return true;
+    }
+}
+
+//Funcion que reembolsa una partida
+public function refundPartida($idpartida){
+    $this->db->trans_begin();
+
+    $this->db->set('documentado',0);
+    $this->db->set('estatus',2);
+    $this->db->where('idpartidas',$idpartida);
+    $this->db->update('partidas');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+    }else{
+        $this->db->trans_commit();
+        return true;
+    }
+}
+
 //Funcion que agrega a la partida los datos del xml validado
 public function updatepartida($folio,$idpartida){
     $this->db->trans_begin();
@@ -170,7 +209,7 @@ public function updatepartida($folio,$idpartida){
 
     $this->db->insert('comprobantes');
 
-    $this->db->set('comprobado', 'comprobado + '.$this->total.'', FALSE);
+    $this->db->set('documentado', 'documentado + '.$this->total.'', FALSE);
     $this->db->where('idpartidas', $idpartida);
     $this->db->update('partidas');
 

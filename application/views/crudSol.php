@@ -83,7 +83,7 @@ $fecha=date("Y-m-d");
   <tr>
     <th>Fecha Solicitud</th>
     <th>Nombre del Solicitante</th>
-    <th>Area del Solicitante</th>
+    <th>Area</th>
     <th>Motivo</th>
     <th>Total</th>
     <th>Tipo</th>
@@ -127,7 +127,7 @@ $fecha=date("Y-m-d");
             }*/
             echo '<td><a href="'.base_url().'welcome/cancelSol?id='.$user->folio.'" title="Cancelar Solicitud"><i class="material-icons red-text center">cancel</i></a></td>';
             echo '<td><a href="'.base_url().'welcome/acceptSol?id='.$user->folio.'" title="Aceptar Solicitud"><i class="material-icons green-text center">beenhere</i></a></td>';
-            echo '<td><a href="'.base_url().'welcome/seeSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'welcome/detalleSol?id='.$user->folio.'" title="Ver Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
           }?> 
 </table>  
     </div>

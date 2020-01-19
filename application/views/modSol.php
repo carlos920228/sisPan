@@ -51,31 +51,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
   </div>
       <div class="row">
           <div class="row modal-form-row">
+          <div class="input-field col s3">
+              <input id="Fecha" type="text" name="Fecha" 
+              <?php $use=$meta[0];
+               echo 'value="'.$use->folio.'"';?> readonly>
+              <label for="Fecha">No Folio</label>
+            </div>
             <div class="input-field col s3">
               <input id="Fecha" type="date" name="Fecha" 
               <?php $use=$meta[0];
                echo 'value="'.$use->Fecha.'"';?> readonly>
               <label for="Fecha">Fecha de Solicitud</label>
             </div>
-            <div class="input-field col s4">
+            <div class="input-field col s6">
               <input id="Nombre" name="Nombre" type="text"
               <?php $use=$meta[0];
                echo 'value="'.$use->Nombre.'"';?> readonly>
               <label for="Nombre">Nombre del Solicitante</label>
             </div>
-            <div class="input-field col s2">
+          </div>
+
+          <div class="row">
+          <div class="input-field col s3">
               <input id="area" type="text" name="area"
               <?php $use=$meta[0];
                echo 'value="'.$use->area.'"';?> readonly>
-              <label for="area">Depto</label>
+              <label for="area">Area</label>
             </div>
             <div class="input-field col s3">
-              <input id="denominacion_comision" name="denominacion_comision" type="text" 
+              <input id="ciudad_origen" type="text" name="ciudad_origen" 
               <?php $use=$meta[0];
-               echo 'value="'.$use->denominacion_comision.'"';?> readonly>
-              <label for="denominacion_comision">Actividad</label>
+              if ($use->tipo_sol==0)
+               {echo 'value="Viaticos"';}
+               else {echo 'value="Reembolso"';} ?> readonly>
+              <label for="ciudad_origen">Tipo de Solicitud</label>
             </div>
-          </div>       
+          </div>
+
           <div class="row">
             <div class="input-field col s3">
               <input id="ciudad_origen" type="text" name="ciudad_origen" 
@@ -103,13 +115,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             </div>
           </div>
           <div class="row">
-            <div class="input-field col s3">
-              <input id="estado_destino" name="estado_destino" type="text"
-              <?php $use=$meta[0];
-               echo 'value="'.$use->secretaria.'"';?> readonly>
-              <label for="estado_destino">Secretaría</label>
-            </div>
-            <div class="input-field col s6">
+            <div class="input-field col s9">
               <input id="motivo" name="motivo" type="text" <?php $use=$meta[0];
                echo 'value="'.$use->motivo.'"';?> readonly>
               <label for="motivo">Motivo</label>            
@@ -119,22 +125,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
                echo 'value="'.number_format($use->total, 2, '.', ',').'"';?> readonly>
               <label for="motivo">Total</label>            
             </div>
-            <?php $use=$meta[0];
-            if($use->estado=='pendiente'){
-             echo '<a class="btn-floating btn-large waves-effect waves-light red pulse btn modal-trigger right" href="#modal1"><i class="material-icons">add</i></a>';}
+            <?php $aux=$aux[0];
+            if($aux->estatus==3){
+             echo '<a class="btn-floating waves-effect waves-light red pulse btn modal-trigger right" href="#modal1"><i class="material-icons">add</i></a>';}
              ?>
           </div>   
                <table class="responsive-table">
         <thead>
           <tr>
               <th>Descripción</th>
-              <th>Total</th>
-              <th>Subtotal</th>
-              <th>Acciones</th>
+              <th>Solicitado</th>
+              <th>Documentado</th>
+              <th></th>
+              <th></th>
+              <th></th>
           </tr>
         </thead>
         <tbody>
          <?php
+         $total=0;
+         $subtotal=0;
          $use=$meta[0];
          $ok=0;
           foreach ($partidas->result() as $user) {
@@ -143,36 +153,62 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             }else{
               $ok=$user->estatus;
             }
-            echo "<tr>";
-            echo "<td>$user->descripcion</td>";
-            echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
-            echo "<td><b>".number_format($user->comprobado, 2, '.', ',')."</b></td>";
-            if($use->estado!=='pendiente' && $use->estado!=='cancelada' && $use->estado!=='aceptada'){
-              echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'" title="No utilicé" <i class="material-icons blue-text center">visibility_off</i>';
-              echo '<a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'" title="Reintegro" <i class="material-icons blue-text center">monetization_on</i></td>';
-              echo "
+              echo "<tr>";
+              echo "<td>$user->descripcion"; if ($user->estatus==2) {echo "-Reembolso";} elseif ($user->estatus==3) {echo "-Sin uso";} echo "</td>";
+              echo "<td><b>".number_format($user->total, 2, '.', ',')."</b></td>";
+              echo "<td><b>".number_format($user->documentado, 2, '.', ',')."</b></td>";
+              if ($user->estatus==0)
+              {
+                echo '<td><a href="'.base_url().'welcome/nousarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Sin Uso" <i class="material-icons blue-text center">visibility_off</i></td>';
+                echo '<td><a href="'.base_url().'welcome/reembolsarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Reembolsar" <i class="material-icons blue-text center">monetization_on</i></td>';
+              }
+              else
+              {
+                echo "<td> </td>";
+                echo "<td> </td>";
+              }
+
+              if ($user->estatus==2)
+              {
+                echo "
               <td>
-              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar XML' name='userfile[]' id='factura_recurso' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
+              <form class='col s12' method='post' action='cargar_reembolso/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
+              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar Reembolso' name='userfile[]' id='factura_recurso' size='20' accept='.pdf' onchange='form.submit()'/>
               </form>
               </td>";
+              }
 
-            }else{
-            if($use->estado=='pendiente'){
-              echo "<td></td>";
-            echo '<td><a href="'.base_url().'welcome/restSol?id='.$user->solicitudes_folio.'&to='.$user->total.'&part='.$user->idpartidas.'"<i class="material-icons red-text center">delete</i></td>';}
-            }
+              if ($user->estatus<2)
+              { 
+                echo "
+              <td>
+              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas'  accept-charset='utf-8' enctype='multipart/form-data'>
+              <input type='file' multiple class='filestyle' data-buttonName='btn btn-primary' data-buttonBefore='true' data-buttonText='Seleccionar Comprobantes' name='userfile[]' id='factura_recurso' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
+              </form>
+              </td>";
+              }
+              
             echo "</tr>";
+
+            if ($user->estatus<2)
+            {
+              $total=$total+$user->total;
+              $subtotal=$subtotal+$user->documentado;
+            }
+
           }?> 
+            <tr>
+            <td>EJECUTADO </td>
+            <td><?php echo number_format($total, 2, '.', ',') ?></td>
+            <td><?php echo number_format($subtotal, 2, '.', ',') ?></td>
+            <td> </td>
+            <td> </td>
+            </tr>
         </tbody>
       </table> 
       <br>
-       <?php 
-       if($use->estado=='pagada' and $ok=='1'){
-       echo '<a href="'.base_url().'welcome/verifySol?id='.$use->folio.'" class="btn-large">Finalizar</a>';}
-       if($use->estado=='pagada' and $ok!='1'){
-       echo '<a href="'.base_url().'welcome/verifySol?id='.$use->folio.'" class="btn-large" disabled>Finalizar</a>';}
-       ?>
+       <a href="<?php echo base_url() ?>welcome/verifySol?id=<?php echo $use->folio ?>" class="btn-large" onclick="if (confirm('¿Desea enviar la Comprobación de esta Solicitud?')){return true;}else{event.stopPropagation(); event.preventDefault();};">Finalizar</a>
+
       </table>
 
 <br>
