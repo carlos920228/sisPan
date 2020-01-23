@@ -23,6 +23,14 @@ class Solicitud_model extends CI_Model{
         $result= $this->db->get('solicitudes');
         return $result->result(); 
     }
+
+    //Consulta que obtiene los datos de una solicitud
+    function getinfo($id){
+        $this->db->where('folio',$id);
+        $result= $this->db->get('solicitudes');
+        return $result->row(); 
+    }
+
     function getPartidas($id){
         $this->db->where('solicitudes_folio',$id);
         $this->db->order_by('descripcion', 'ASC');

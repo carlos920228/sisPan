@@ -505,13 +505,48 @@ public function verificarComprobacion(){
 //Funcion que se encarga de generar el pdf
 public function viewpdf(){
 	
-	$test=$this->Solicitud_model->getMetadata($_GET['id'],"");
-	$test2['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
+	$test=$this->Solicitud_model->getinfo($_GET['id']);
+	$test2=$this->Solicitud_model->getPartidas($_GET['id']);
 
 	$this->load->library('pdf');
-	$html = '
-	<!doctype html>
-<html lang="en">
+
+	$aux="";
+	$tipo="";
+
+	if ($test->tipo_sol==0)
+		{$tipo="Viaticos";}
+	else
+	{$tipo="Reembolso";}
+
+	if ($_GET['to']==0)
+	{
+	$firma='<br>
+	<br>
+	<br>
+	<div class="form-group">
+	<div class="col-xs-3">
+	  <label for="ex1">Solicita</label>
+	  <input class="form-control input-sm" id="ex1" type="text" >
+	</div>
+	<div class="col-xs-4">
+	  <label for="ex2">Aprueba</label>
+	  <input class="form-control input-sm" id="ex2" type="text" >
+	</div>
+	<div class="col-xs-3">
+	  <label for="ex3">Autoriza</label>
+	  <input class="form-control input-sm" id="ex3" type="text" >
+	</div>
+	</div>';
+	}
+	else
+		{$firma='';}
+
+	foreach ($test2->result() as $info) {
+		$aux = $aux.'<tr><td>'.$info->descripcion.'</td><td>'.number_format($info->total, 2, ".", ",").'</td></tr>'; 
+	}
+
+	$html = '<!doctype html>
+	<html lang="en">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -519,88 +554,107 @@ public function viewpdf(){
 
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <title>Solicitud de Viaticos</title>
+	<title>Solicitud de Viaticos</title>
+	<style type="text/css">
+    input[type="text"]{
+        border:none;
+		border-bottom:2px solid #000000;
+		width: 100%;
+		height: 22px;
+		font-size: larger;
+    }
+	</style>
   </head>
   <body>
 
+ 
+
+  <div class=”container-fluid”>
+  <div class="row">
+
   <h1 class="text-center bg-info">Solicitud de Viaticos</h1>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
 
   <div class="form-group row">
   <div class="col-xs-2">
     <label for="ex1">Folio</label>
-    <input class="form-control input-sm" id="ex1" type="text">
+    <input class="form-control input-sm" id="ex1" type="text" value="'.$test->folio.'">
   </div>
   <div class="col-xs-3">
     <label for="ex2">Fecha de Solicitud</label>
-    <input class="form-control input-sm" id="ex2" type="text">
+    <input class="form-control input-sm" id="ex2" type="text" size="50" value="'.$test->Fecha.'">
   </div>
-  <div class="col-xs-6">
+  <div class="col-xs-5">
     <label for="ex3">Nombre del Solicitante</label>
-    <input class="form-control input-sm" id="ex3" type="text">
+    <input class="form-control input-sm" id="ex3" type="text" value="'.$test->Nombre.'">
   </div>
 </div>
 
 <div class="form-group row">
 <div class="col-xs-4">
   <label for="ex1">Area del Solicitante</label>
-  <input class="form-control input-sm" id="ex1" type="text">
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->area.'">
 </div>
 <div class="col-xs-7">
-  <label for="ex2">Comisión</label>
-  <input class="form-control input-sm" id="ex2" type="text">
+  <label for="ex2">Tipo de Solicitud</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$tipo.'">
 </div>
 </div>
 
 <div class="form-group row">
 <div class="col-xs-3">
   <label for="ex1">Ciudad Origen</label>
-  <input class="form-control input-sm" id="ex1" type="text">
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->ciudad_origen.'">
 </div>
 <div class="col-xs-2">
   <label for="ex2">Estado Origen</label>
-  <input class="form-control input-sm" id="ex2" type="text">
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->estado_origen.'">
 </div>
 <div class="col-xs-3">
   <label for="ex3">Ciudad Destino</label>
-  <input class="form-control input-sm" id="ex3" type="text">
+  <input class="form-control input-sm" id="ex3" type="text" value="'.$test->ciudad_destino.'">
 </div>
 <div class="col-xs-2">
   <label for="ex3">Estado Destino</label>
-  <input class="form-control input-sm" id="ex3" type="text">
+  <input class="form-control input-sm" id="ex3" type="text" value="'.$test->estado_destino.'">
 </div>
 </div>
 
 <div class="form-group row">
-<div class="col-xs-">
-  <label for="ex1">Secretaria</label>
-  <input class="form-control input-sm" id="ex1" type="text">
-</div>
-<div class="col-xs-6">
+<div class="col-xs-9">
   <label for="ex2">Motivo</label>
-  <input class="form-control input-sm" id="ex2" type="text">
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->motivo.'">
 </div>
 <div class="col-xs-2">
   <label for="ex3">Total</label>
-  <input class="form-control input-sm" id="ex3" type="text">
+  <input class="form-control input-sm" id="ex3" type="text" value="'.number_format($test->total, 2, '.', ',').'">
 </div>
 </div>
+
 
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>#</th>
             <th>Descripción</th>
             <th>Total</th>
         </tr>
     </thead>
-    <tbody>
-        <tr>
-            <td>1</td>
-            <td>Gasolina</td>
-            <td>$500.00</td>
-        </tr>
-        <tbody>
+	<tbody>
+'.$aux.'
+<tbody>
 </table>
+
+
+</div>
+</div>
+</div>
+</div>
+
+'.$firma.'
+
+
 
 </body>
 </html>

@@ -155,6 +155,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
       <br>
       </table>
 
+      <div class="input-field">
+      <a href="<?php echo base_url()."welcome/viewpdf?id=".$use->folio."&to=0";?>" target="_blank" class="btn waves-effect light-blue darken-2">Descargar PDF<i class="material-icons right">cloud_download</i></a>
+      </div>
+
         </body>
 
     <!-- Compiled and minified JavaScript -->
