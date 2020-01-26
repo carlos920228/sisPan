@@ -33,23 +33,85 @@ class Solicitud_model extends CI_Model{
 
     function getPartidas($id){
         $this->db->where('solicitudes_folio',$id);
+        $this->db->order_by('estatus', 'ASC');
         $this->db->order_by('descripcion', 'ASC');
         $result= $this->db->get('partidas');
         return $result; 
     }
+
+    function getComprobantes($id){
+        $this->db->where('idpartida',$id);
+        $result= $this->db->get('comprobantes');
+        return $result; 
+    }
+
     function addPartida($data){
         If(!$this->db->insert('partidas',$data)){
             return $error = $this->db->error();
             }
     }
+
+//Funcion que agrega partidas extras en la vista de comprobacion de solicitud de viaticos
+function addPartidacomp($data){
+    $this->db->trans_begin();
+
+    $this->db->set('descripcion', $data['descripcion']);
+    $this->db->set('total', $data['total']);
+    $this->db->set('solicitudes_folio', $data['solicitudes_folio']);
+    $this->db->set('estatus', 1);
+
+    $bandera = $this->db->insert('partidas');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+        }
+    else{
+        $this->db->trans_commit();
+        return true;
+        }
+}
+
+//Funcion que termina la validacion de la partida en el proceso de validacion de documentos
+function terminatePartida($partida,$total,$documentado)
+{
+    $this->db->trans_begin();
+
+    $this->db->set('total',$total);
+    $this->db->set('documentado',$documentado);
+    $this->db->where('idpartidas',$partida);
+    $this->db->update('partidas');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+    }else{
+        $this->db->trans_commit();
+        return true;
+    }
+}
+
+
     function updateTotal($id,$sub){
         $query = $this->db->query("UPDATE solicitudes SET total=total+$sub WHERE folio=$id");
     }
+
+
     function restSol($sol,$total,$partida){
          $query = $this->db->query("UPDATE solicitudes SET total=total-$total WHERE folio=$sol");
          $this->db->where('idpartidas', $partida);
          $this->db->delete('partidas');
     }
+
+
+//Funcion que elimina la partida agregada durante la comprobacion
+function restSolcomp($partida)
+{
+    $this->db->where('idpartidas', $partida);
+    $this->db->delete('partidas');
+    $this->db->where('idpartida', $partida);
+    $this->db->delete('comprobantes');
+}
 
     function addMetadata($data){
         If(!$this->db->insert('solicitudes',$data)){

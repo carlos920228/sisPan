@@ -296,6 +296,32 @@ public function comprobarSol()
 	}
 }
 
+//Funcion en la que se validan la solicitud de viaticos de acuerdo a los comprobantes subidos
+public function validarSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$test['user']=$this->User_model->data($_SESSION['username']);
+		$use=$test['user'];
+		$name=$use[0]->nombre." ".$use[0]->apellidos;
+		$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
+		$test['aux']=$this->Solicitud_model->validatePartida($_GET['id']);
+		$meta=$test['meta'];
+			if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
+				redirect('welcome/verMisSolicitudes');
+			}
+		
+		$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
+		$this->load->view('menu',$test);
+		$this->load->view('solValidar',$test);
+
+	}
+	else
+	{
+		redirect('welcome');
+	}
+}
+
 
 	public function finSol(){
 		if(isset($_SESSION['username'])&&$_SESSION['rol']<=1){
@@ -376,6 +402,21 @@ public function verifySol()
 	}
 }
 
+//Funcion que verifica las partidas con los xml subidos para proceder a Finalizar la solicitud
+public function verifyPartida()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->terminatePartida($_POST['partida'],$_POST['total'],$_POST['comprobado']);
+		redirect('welcome/validarSol?id='.$_POST['folio']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
+
 //Funcion que agrega las partidas de la solicitud de viaticos
 public function addPartida()
 {
@@ -391,6 +432,21 @@ public function addPartida()
 	}
 }
 
+//Funcion que agrega las partidas sin uso en la comprobacion de soliitud de viaticos
+public function addPartidacomp()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->addPartidacomp($_POST);
+		//$this->Solicitud_model->updateTotal($_POST['solicitudes_folio'],$_POST['total']);
+		redirect('welcome/comprobarSol?id='.$_POST['solicitudes_folio']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
 //Funcion que permite eliminar partidas de la solicitud de viaticos
 public function restSol()
 {
@@ -398,6 +454,29 @@ public function restSol()
 	{
 		$this->Solicitud_model->restSol($_GET['id'],$_GET['to'],$_GET['part']);
 		redirect('welcome/generarSolicitudPartidas?id='.$_GET['id']);
+	}
+	else
+	{
+	redirect('welcome/');
+	}
+}
+
+//Funcion que permite eliminar partidas agregadas en la comprobacion de la solicitud de viaticos
+public function restSolcomp()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$this->Solicitud_model->restSolcomp($_GET['part']);
+
+			$files = glob('./uploads/'.$_GET['id'].'/'.$_GET['name'].'/*'); // get all file names
+			foreach($files as $file)
+				{ // iterate files
+				  if(is_file($file))
+				  unlink($file); // delete file
+				}
+			rmdir('./uploads/'.$_GET['id'].'/'.$_GET['name']);
+
+		redirect('welcome/comprobarSol?id='.$_GET['id']);
 	}
 	else
 	{
@@ -525,7 +604,7 @@ public function viewpdf(){
 	<br>
 	<div class="form-group">
 	<div class="col-xs-3">
-	  <label for="ex1">Solicita</label>
+	  <label for="ex1">Solicitante</label>
 	  <input class="form-control input-sm" id="ex1" type="text" >
 	</div>
 	<div class="col-xs-4">
@@ -660,10 +739,171 @@ public function viewpdf(){
 </html>
 	';
 
-    $this->pdf->generate($html, 'prueba', true, 'Letter', 'portrait');
+    $this->pdf->generate($html, 'Solicitud de Viaticos No '.$test->folio, true, 'Letter', 'portrait');
 		
 }
 
+
+//Funcion que se encarga de generar el pdf
+public function viewpdfcomp(){
+		
+	$test=$this->Solicitud_model->getinfo($_GET['id']);
+	$test2=$this->Solicitud_model->getPartidas($_GET['id']);
+
+	$this->load->library('pdf');
+
+	$aux="";
+	$tipo="";
+
+	if ($test->tipo_sol==0)
+		{$tipo="Viaticos";}
+	else
+	{$tipo="Reembolso";}
+
+	foreach ($test2->result() as $info) 
+	{
+		$estado="";
+
+		if($info->estatus==2)
+		{
+			$estado="REEMBOLSO";
+		}
+		else if($info->estatus==3)
+		{
+			$estado="SIN USO";
+		}
+
+		$aux = $aux.'<tr><td>'.$info->descripcion.'</td><td>'.$estado.'</td><td>'.number_format($info->total, 2, ".", ",").'</td><td>'.number_format($info->documentado, 2, ".", ",").'</td></tr> <tr>
+		<th>Folio SAT</th>
+		<th>RFC Emisor</th>
+		<th></th>
+		<th>Comprobado</th>
+		</tr>'; 
+	
+		$comp=$this->Solicitud_model->getComprobantes($info->idpartidas);
+		
+		foreach ($comp->result() as $detalle) 
+		{
+			$aux = $aux.'<tr><td>'.strtoupper($detalle->foliosat).'</td><td>'.$detalle->emisor.'</td><td></td><td>'.number_format($detalle->totalfactura, 2, ".", ",").'</td></tr>'; 
+		}
+	}
+
+	$html = '<!doctype html>
+	<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<title>Solicitud de Viaticos</title>
+	<style type="text/css">
+    input[type="text"]{
+        border:none;
+		border-bottom:2px solid #000000;
+		width: 100%;
+		height: 22px;
+		font-size: larger;
+    }
+	</style>
+  </head>
+  <body>
+
+ 
+
+  <div class=”container-fluid”>
+  <div class="row">
+
+  <h1 class="text-center bg-info">Solicitud de Viaticos</h1>
+
+  <div class="panel panel-default">
+  <div class="panel-body">
+
+  <div class="form-group row">
+  <div class="col-xs-2">
+    <label for="ex1">Folio</label>
+    <input class="form-control input-sm" id="ex1" type="text" value="'.$test->folio.'">
+  </div>
+  <div class="col-xs-3">
+    <label for="ex2">Fecha de Solicitud</label>
+    <input class="form-control input-sm" id="ex2" type="text" size="50" value="'.$test->Fecha.'">
+  </div>
+  <div class="col-xs-5">
+    <label for="ex3">Nombre del Solicitante</label>
+    <input class="form-control input-sm" id="ex3" type="text" value="'.$test->Nombre.'">
+  </div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-4">
+  <label for="ex1">Area del Solicitante</label>
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->area.'">
+</div>
+<div class="col-xs-7">
+  <label for="ex2">Tipo de Solicitud</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$tipo.'">
+</div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-3">
+  <label for="ex1">Ciudad Origen</label>
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->ciudad_origen.'">
+</div>
+<div class="col-xs-2">
+  <label for="ex2">Estado Origen</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->estado_origen.'">
+</div>
+<div class="col-xs-3">
+  <label for="ex3">Ciudad Destino</label>
+  <input class="form-control input-sm" id="ex3" type="text" value="'.$test->ciudad_destino.'">
+</div>
+<div class="col-xs-2">
+  <label for="ex3">Estado Destino</label>
+  <input class="form-control input-sm" id="ex3" type="text" value="'.$test->estado_destino.'">
+</div>
+</div>
+
+<div class="form-group row">
+<div class="col-xs-9">
+  <label for="ex2">Motivo</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->motivo.'">
+</div>
+<div class="col-xs-2">
+  <label for="ex3">Total</label>
+  <input class="form-control input-sm" id="ex3" type="text" value="'.number_format($test->total, 2, '.', ',').'">
+</div>
+</div>
+
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+			<th width="50%">Descripción</th>
+			<th></th>
+			<th>Solicitado</th>
+			<th>Comprobado</th>
+        </tr>
+    </thead>
+	<tbody>
+'.$aux.'
+<tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
+	';
+
+    $this->pdf->generate($html, 'Solicitud de Viaticos No '.$test->folio, true, 'Letter', 'portrait');
+		
+}
 
 //Funcion que se encarga de descargar los comprobantes en zip
 public function downloadxml(){
@@ -673,11 +913,11 @@ public function downloadxml(){
 	
 		$this->load->library('zip');
 
-		/*
 		$path = './uploads/'.$_GET['id'].'/';
-		$this->zip->read_dir($path);
-		$this->zip->download('my_backup.zip');
-		*/
+		$this->zip->read_dir($path,FALSE);
+		//$this->zip->download('my_backup.zip');
+
+		/*
 		$files = glob('./uploads/'.$_GET['id'].'/*'); // get all file names
 	
 			foreach($files as $file)
@@ -687,7 +927,8 @@ public function downloadxml(){
 			}
 
 		$filename = $this->zip->archive(FCPATH.'/uploads/'.$_GET['id'].'.zip');
-		$this->zip->download($_GET['id'].'.zip');
+		*/
+		$this->zip->download('Solicitud-0'.$_GET['id'].'.zip');
 
 		}else{
 		redirect('welcome/');
@@ -696,14 +937,14 @@ public function downloadxml(){
 
 
 //funcion que sube los xml al servidor
-function cargar_factura($folio,$idpartida) 
+function cargar_factura($folio,$idpartida,$concepto) 
 {
 
 $comprobantes = array();
 $countfiles = count($_FILES['userfile']['name']);
 $this->resultado = "";
 
-$carpeta = './uploads/'.$folio;
+$carpeta = './uploads/'.$folio.'/'.$concepto;
 
 	if (!file_exists($carpeta)) 
 	{
@@ -719,7 +960,7 @@ $carpeta = './uploads/'.$folio;
 		}
 	*/
 
-	$config["upload_path"] = './uploads/'.$folio;
+	$config["upload_path"] = './uploads/'.$folio.'/'.$concepto;
 	$config["allowed_types"] = 'xml|pdf';
 	$config["overwrite"] = TRUE;
 
@@ -740,7 +981,7 @@ $carpeta = './uploads/'.$folio;
 
 			if ($comprobantes[$i]['file_type']=="text/xml")
 			{
-		  		$this->validar_xml("./uploads/".$folio.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida);
+		  		$this->validar_xml("./uploads/".$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida, $concepto);
 			}
 		}
 
@@ -807,7 +1048,7 @@ redirect('welcome/comprobarSol?id='.$folio.'');
 
 
 //Funcion que valida los xml y verifica su estatus
-function validar_xml($file, $folio, $idpartida) 
+function validar_xml($file, $folio, $idpartida, $concepto) 
 {
 	$xml = new SimpleXMLElement ($file,null,true);
 	$cadena = htmlentities(file_get_contents($file));
@@ -868,7 +1109,7 @@ function validar_xml($file, $folio, $idpartida)
 
 				if ($datos->folio!=$folio)
 				{
-					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
+					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
 					unlink($file);
 				}
 				
@@ -886,19 +1127,19 @@ function validar_xml($file, $folio, $idpartida)
 	
 				$this->Solicitud_model->updatepartida($folio,$idpartida);
 
-				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
 			}
 		
       	}
       	else if ($valido=="Cancelado")
       	{
-			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." es un Comprobante Fiscal Cancelado". "<br>";
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal Cancelado". "<br>";
 			unlink($file);	
       	}
 	}
 	else
       	{
-			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/","",$file) ." no es un Comprobante Fiscal Valido". "<br>";
+			$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." no es un Comprobante Fiscal Valido". "<br>";
 			unlink($file);	
       	}
       

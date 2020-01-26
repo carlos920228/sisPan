@@ -4,35 +4,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
 <div class="container">
 
       <!--Modal para agregar partida-->
-  <div id="modal1" class="modal modal">
+  <div id="myModal" class="modal modal">
     <div class="modal-content">
       <div class="row">
-        <?php 
-        if(empty($meta)){
-          redirect('welcome/verMisSolicitudes');
-        }
-        ?>
-        <form class="col s12" method="post" action='<?php echo base_url()."welcome/addPartidacomp";?>' accept-charset="utf-8" enctype="multipart/form-data">
+        <form class="col s12" method="post" action='<?php echo base_url()."welcome/verifyPartida";?>' accept-charset="utf-8" enctype="multipart/form-data">
           <div class="row modal-form-row">
-             <input id="solicitudes_folio" type="text" name="solicitudes_folio" class="validate" required
-             <?php $use=$meta[0];
-               echo 'value="'.$use->folio.'"';?> hidden>
+
+          <input id="folio" type="hidden" name="folio" <?php $use=$meta[0]; echo 'value="'.$use->folio.'"';?>>
+          <input id="partida" type="hidden" name="partida" value="">
+
             <div class="input-field col s6">
-            <select id="concepto" name="descripcion" class="validate" required>
-            <option value="" disabled selected>Selecciona una opción</option>
-            <option value="Autobuses">Autobuses</option>
-            <option value="Gasolina">Gasolina</option>
-            <option value="Casetas">Casetas</option>
-            <option value="Hotel">Hotel</option>
-            <option value="Comidas">Comidas</option>
-            <option value="Otro">Otro</option>
-            </select>
-            <label data-error="wrong" data-success="right" for="activity">Concepto</label>
+            <input id="concepto" name="concepto" type="text" class="validate" step="any" placeholder="0.00" min="1" required readonly><label for="concepto">Cantidad</label>
             </div>
             <div class="input-field col s6">
             <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Cantidad</label>
             </div>
-          </div>      
+          </div> 
+          <div class="row modal-form-row">
+            <div class="input-field col s6">
+            <input id="comprobado" name="comprobado" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="comprobado">Comprobado</label>
+            </div>
+          </div>     
           <div class="row">
             <div class="input-field col s6">
             <button class="btn waves-effect light-blue darken-2" type="submit">Guardar
@@ -49,6 +41,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
       </div>
     </div>
   </div>
+
       <div class="row">
           <div class="row modal-form-row">
           <div class="input-field col s3">
@@ -125,10 +118,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
                echo 'value="'.number_format($use->total, 2, '.', ',').'"';?> readonly>
               <label for="motivo">Total</label>            
             </div>
-            <?php $aux=$aux[0];
-            if($aux->estatus==3){
-             echo '<a class="btn-floating waves-effect waves-light red pulse btn modal-trigger right" href="#modal1"><i class="material-icons">add</i></a>';}
-             ?>
           </div>   
                <table class="responsive-table">
         <thead>
@@ -136,9 +125,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               <th>Descripción</th>
               <th></th>
               <th>Solicitado</th>
-              <th>Documentado</th>
-              <th></th>
-              <th></th>
+              <th>Comprobado</th>
               <th></th>
           </tr>
         </thead>
@@ -162,14 +149,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td></td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
-              echo '<td><a href="'.base_url().'welcome/nousarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Sin Uso" <i class="material-icons blue-text center">visibility_off</i></td>';
-              echo '<td><a href="'.base_url().'welcome/reembolsarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Reembolso" <i class="material-icons blue-text center">monetization_on</i></td>';
-              echo "<td>
-              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='facturas' class='waves-effect waves-light blue btn-small'>subir factura</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='facturas' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
-              </form>
-              </td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==1)
@@ -179,14 +159,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td></td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
-              echo '<td align="center"><a href="'.base_url().'welcome/restSolcomp?id='.$user->solicitudes_folio.'&part='.$user->idpartidas.'&name='.$user->descripcion.'"<i class="material-icons red-text center">delete</i></td>';
-              echo '<td></td>';
-              echo "<td>
-              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='facturas' class='waves-effect waves-light blue btn-small'>subir factura</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='facturas' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
-              </form>
-              </td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==2)
@@ -195,15 +168,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td>$user->descripcion</td>";
               echo "<td>Reembolso</td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
-              echo "<td></td>";
-              echo '<td></td>';
-              echo '<td></td>';
-              echo "<td>
-              <form class='col s12' method='post' action='cargar_reembolso/$use->folio/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='comprobante' class='waves-effect waves-light blue darken-4 btn-small'>subir comprobante</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='comprobante' size='20' accept='.pdf' onchange='form.submit()'/>
-              </form>
-              </td>";
+              echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==3)
@@ -214,15 +180,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td></td>";
               echo '<td></td>';
-              echo '<td></td>';
-              echo "<td></td>";
             }
 
 
             
             echo "</tr>";
 
-            if ($user->estatus<2)
+            if ($user->estatus<3)
             {
               $total=$total+$user->total;
               $subtotal=$subtotal+$user->documentado;
@@ -234,24 +198,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             <td> </td>
             <td><b><?php echo number_format($total, 2, '.', ',') ?></b></td>
             <td><b><?php echo number_format($subtotal, 2, '.', ',') ?></b></td>
-            <td> </td>
-            <td> </td>
             </tr>
         </tbody>
       </table> 
       <br>
-       <a href="<?php echo base_url() ?>welcome/verifySol?id=<?php echo $use->folio ?>" class="btn-large" onclick="if (confirm('¿Desea enviar la Comprobación de esta Solicitud?')){return true;}else{event.stopPropagation(); event.preventDefault();};">Finalizar</a>
+       
       </table>
 
-<br>
-<br>
-<div class="form-group">
-<?php if($this->session->flashdata('correcto')){?>
-<?php echo $this->session->flashdata('correcto')?>
-<?php }?>
-</div>
+      <div class="row">
+            <div class="input-field col s3">
+            <a href="<?php echo base_url() ?>welcome/verifySol?id=<?php echo $use->folio ?>" class="btn" onclick="if (confirm('¿Desea enviar la Comprobación de esta Solicitud?')){return true;}else{event.stopPropagation(); event.preventDefault();};">Finalizar</a>
+            </div>
+            <div class="input-field col s3">
+            <a href="<?php echo base_url() ?>welcome/viewpdfcomp?id=<?php echo $use->folio ?>&to=1" target="_blank" class="btn"><i class="material-icons left">cloud</i>Ver PDF</a>
+            </div>
+            <div class="input-field col s4">
+            <a href="<?php echo base_url() ?>welcome/downloadxml?id=<?php echo $use->folio ?>" class="btn"><i class="material-icons left">cloud_download</i>Descargar XML</a>
+            </div>
+      </div>
 
-        </body>
+</body>
 
     <!-- Compiled and minified JavaScript -->
   
@@ -260,7 +226,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
     document.addEventListener('DOMContentLoaded', function() {
     var elems = document.querySelectorAll('.sidenav');
     var instances = M.Sidenav.init(elems);
-     var elems = document.querySelectorAll('.modal');
+    var elems = document.querySelectorAll('.modal');
     var instances = M.Modal.init(elems);
     var elems = document.querySelectorAll('.dropdown-trigger');
     var instances = M.Dropdown.init(elems);
@@ -268,3 +234,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
     var instances = M.FormSelect.init(elems);
   });           
   </script>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js"></script>
+
+<script type="text/javascript">
+
+$('body').on('click','#validar_partida', function() {
+
+  var datos = $(this).val().split('%');
+
+  $('#partida').val(datos[0]);
+  $('#concepto').val(datos[1]);
+  $('#total').val(datos[2]);
+  $('#comprobado').val(datos[3]);
+
+});
+
+</script>
+
