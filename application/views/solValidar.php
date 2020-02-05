@@ -13,18 +13,23 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
           <input id="folio" type="hidden" name="folio" <?php $use=$meta[0]; echo 'value="'.$use->folio.'"';?>>
           <input id="partida" type="hidden" name="partida" value="">
 
-            <div class="input-field col s6">
+            <div class="input-field col s4">
             <input id="concepto" name="concepto" type="text" class="validate" step="any" placeholder="0.00" min="1" required readonly><label for="concepto">Cantidad</label>
             </div>
-            <div class="input-field col s6">
-            <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Cantidad</label>
+            <div class="input-field col s4">
+            <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Solicitado</label>
             </div>
-          </div> 
-          <div class="row modal-form-row">
-            <div class="input-field col s6">
+            <div class="input-field col s4">
             <input id="comprobado" name="comprobado" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="comprobado">Comprobado</label>
             </div>
-          </div>     
+          </div> 
+
+          <div class="row modal-form-row">
+          <table class="responsive-table" id="tablacomprobantes">
+
+          </table> 
+          </div>   
+
           <div class="row">
             <div class="input-field col s6">
             <button class="btn waves-effect light-blue darken-2" type="submit">Guardar
@@ -125,6 +130,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               <th>Descripción</th>
               <th></th>
               <th>Solicitado</th>
+              <th>Documentado</th>
               <th>Comprobado</th>
               <th></th>
           </tr>
@@ -149,7 +155,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td></td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
-              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
+              echo "<td>".number_format($user->comprobado, 2, '.', ',')."</td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->comprobado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==1)
@@ -159,7 +166,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td></td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
-              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
+              echo "<td>".number_format($user->comprobado, 2, '.', ',')."</td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->comprobado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==2)
@@ -169,7 +177,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td>Reembolso</td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td>".number_format($user->documentado, 2, '.', ',')."</td>";
-              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->documentado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
+              echo "<td>".number_format($user->comprobado, 2, '.', ',')."</td>";
+              echo '<td align="center"><button type="button" class="btn-floating waves-effect waves-light blue modal-trigger" id="validar_partida" href="#myModal" value="'.$user->idpartidas.'%'.$user->descripcion.'%'.$user->total.'%'.$user->comprobado.'" title="Validar Partida"><i class="material-icons white-text center">done</i></td>';
             }
 
             else if ($user->estatus==3)
@@ -179,6 +188,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo "<td>Sin Uso</td>";
               echo "<td>".number_format($user->total, 2, '.', ',')."</td>";
               echo "<td></td>";
+              echo '<td></td>';
               echo '<td></td>';
             }
 
@@ -207,7 +217,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
 
       <div class="row">
             <div class="input-field col s3">
-            <a href="<?php echo base_url() ?>welcome/verifySol?id=<?php echo $use->folio ?>" class="btn" onclick="if (confirm('¿Desea enviar la Comprobación de esta Solicitud?')){return true;}else{event.stopPropagation(); event.preventDefault();};">Finalizar</a>
+            <a href="<?php echo base_url() ?>welcome/terminateSol?id=<?php echo $use->folio ?>" class="btn" onclick="if (confirm('¿Desea Finalizar esta Solicitud?')){return true;}else{event.stopPropagation(); event.preventDefault();};">Finalizar</a>
             </div>
             <div class="input-field col s3">
             <a href="<?php echo base_url() ?>welcome/viewpdfcomp?id=<?php echo $use->folio ?>&to=1" target="_blank" class="btn"><i class="material-icons left">cloud</i>Ver PDF</a>
@@ -239,6 +249,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
 
 <script type="text/javascript">
 
+var dominio = "<?php echo base_url();?>";
+
 $('body').on('click','#validar_partida', function() {
 
   var datos = $(this).val().split('%');
@@ -247,6 +259,26 @@ $('body').on('click','#validar_partida', function() {
   $('#concepto').val(datos[1]);
   $('#total').val(datos[2]);
   $('#comprobado').val(datos[3]);
+
+  $.post(dominio+"welcome/viewComprobantes/"+datos[0], function(data) {
+            $("#tablacomprobantes").html(data);
+            });
+});
+
+$('body').on('click','#item_xml', function() {
+
+var idd = $(this).val().split('#');
+var aux= $('#comprobado').val();
+
+if($(this).prop("checked") == true)
+{
+  $('#comprobado').val((parseFloat(aux) + parseFloat(idd[1])).toFixed(2));
+}
+
+else if($(this).prop("checked") == false)
+  {
+    $('#comprobado').val((parseFloat(aux) - parseFloat(idd[1])).toFixed(2));
+  }
 
 });
 

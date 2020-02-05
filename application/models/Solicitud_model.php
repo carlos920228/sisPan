@@ -72,15 +72,36 @@ function addPartidacomp($data){
         }
 }
 
+//Funcion que verifica si todos los documentos son validos para enviar la solicitud a finalizada o a incidencia
+function checkIncidencia($folio)
+{
+    $this->db->select_avg('estatus');
+    $this->db->where('folio',$folio);
+    $result = $this->db->get('comprobantes');
+    return $result->row(); 
+}
+
 //Funcion que termina la validacion de la partida en el proceso de validacion de documentos
-function terminatePartida($partida,$total,$documentado)
+function terminatePartida($partida,$total,$comprobado,$folio)
 {
     $this->db->trans_begin();
 
     $this->db->set('total',$total);
-    $this->db->set('documentado',$documentado);
+    $this->db->set('comprobado',$comprobado);
     $this->db->where('idpartidas',$partida);
     $this->db->update('partidas');
+
+    $this->db->set('estatus',1);
+    $this->db->where('idpartida',$partida);
+    $this->db->update('comprobantes');
+
+    foreach($folio as $value)
+    {
+        $s = explode("#",$value);
+        $this->db->set('estatus',3);
+        $this->db->where('foliosat',$s[0]);
+        $this->db->update('comprobantes');
+    }
 
     if ($this->db->trans_status() === FALSE){
         $this->db->trans_rollback();
@@ -91,6 +112,33 @@ function terminatePartida($partida,$total,$documentado)
     }
 }
 
+//Funcion que finaliza la solicitud comprobada y la envia a finalizada o incidencia
+function terminateSolicitud($folio,$aux)
+{
+    $this->db->trans_begin();
+    $estado="";
+
+    if ($aux==0)
+    {  
+        $estado="incidencia";
+    }
+    else
+    {
+        $estado="finalizada";
+    }
+
+    $this->db->set('estado',$estado);
+    $this->db->where('folio',$folio);
+    $this->db->update('solicitudes');
+
+    if ($this->db->trans_status() === FALSE){
+        $this->db->trans_rollback();
+        return false;
+    }else{
+        $this->db->trans_commit();
+        return true;
+    }
+}
 
     function updateTotal($id,$sub){
         $query = $this->db->query("UPDATE solicitudes SET total=total+$sub WHERE folio=$id");

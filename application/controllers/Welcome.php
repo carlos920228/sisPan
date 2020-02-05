@@ -407,7 +407,12 @@ public function verifyPartida()
 {
 	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
 	{
-		$this->Solicitud_model->terminatePartida($_POST['partida'],$_POST['total'],$_POST['comprobado']);
+		//foreach($_POST['doctosxml'] as $value)
+		//{
+		//	$s = explode("#",$value);
+			$this->Solicitud_model->terminatePartida($_POST['partida'],$_POST['total'],$_POST['comprobado'],$_POST['doctosxml']);
+		//}
+		
 		redirect('welcome/validarSol?id='.$_POST['folio']);
 	}
 	else
@@ -1146,6 +1151,76 @@ function validar_xml($file, $folio, $idpartida, $concepto)
 }
 
 
+//Funcion que envia las solicitudes para la verificacion de los xml
+public function terminateSol()
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$total = $this->Solicitud_model->checkIncidencia($_GET['id']);
+		$aux=0;
+
+		if ($total->estatus<3)
+		{
+			$aux=0;
+			$this->session->set_flashdata('incidencia', "La Solicitud con Folio No ".$_GET['id']." se ha enviado a Incidencia para su Verificación");
+		}
+		else
+		{
+			$aux=1;
+			$this->session->set_flashdata('finalizado', "La Solicitud con Folio No ".$_GET['id']." ha Finalizado su proceso");
+		}
+
+		$this->Solicitud_model->terminateSolicitud($_GET['id'],$aux);
+		redirect('welcome/verificarComprobacion');
+	}
+	else
+	{
+		redirect('welcome');
+	}
+}
+
+//Funcion  que muestra los documentos xml en el modal para su validacion individual
+public function viewComprobantes($id)
+{
+	if(isset($_SESSION['username'])&&$_SESSION['rol']<=1)
+	{
+		$comp=$this->Solicitud_model->getComprobantes($id);
+		
+		echo '<thead>
+			  <tr>
+				<th>Folio SAT</th>
+				<th>Monto</th>
+				<th></th>
+			  </tr>
+			  </thead>
+			  
+			  <tbody>';
+		
+			foreach ($comp->result() as $detalle) 
+			{
+				echo '<tr>
+						<td>'.strtoupper($detalle->foliosat).'</td>
+						<td>'.number_format($detalle->totalfactura, 2, ".", ",").'</td>
+						<td>
+							<label>';
+							if ($detalle->estatus==3)
+							{
+								echo '<input type="checkbox" class="filled-in" checked="checked" id="item_xml" value="'.$detalle->foliosat.'#'.$detalle->totalfactura.'" name="doctosxml[]"/>';
+							}
+							else
+							{
+								echo '<input type="checkbox" class="filled-in" id="item_xml" value="'.$detalle->foliosat.'#'.$detalle->totalfactura.'" name="doctosxml[]"/>';
+							}
+        			  		
+        			  		echo '<span></span>
+							</label>
+						</td>
+					  </tr>'; 
+			}
+
+			echo '</tbody>';
+	}
+}
 
 
 

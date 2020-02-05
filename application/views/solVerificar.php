@@ -79,6 +79,25 @@ Modal para agregar usuario-->
     </div>
   </div>
 <!-- Tabla de usuarios-->
+
+<div class="form-group">
+<?php if($this->session->flashdata('finalizado')){?>
+
+    <div class="chip green white-text">
+    <?php echo $this->session->flashdata('finalizado')?>
+    <i class="close material-icons">close</i>
+    </div>
+
+<?php } else if($this->session->flashdata('incidencia')){?>
+
+    <div class="chip red white-text">
+    <?php echo $this->session->flashdata('incidencia')?>
+    <i class="close material-icons">close</i>
+    </div>
+
+<?php }?>
+</div>
+
 <table>
   <tr>
     <th>Fecha Solicitud</th>
