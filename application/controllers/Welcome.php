@@ -986,7 +986,7 @@ $carpeta = './uploads/'.$folio.'/'.$concepto;
 
 			if ($comprobantes[$i]['file_type']=="text/xml")
 			{
-		  		$this->validar_xml("./uploads/".$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name']."", $folio, $idpartida, $concepto);
+		  		$this->validar_xml('./uploads/'.$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name'].'', $folio, $idpartida, $concepto);
 			}
 		}
 
@@ -1046,6 +1046,7 @@ $carpeta = './uploads/'.$folio.'/'.$idpartida;
 
 	}
 
+$this->session->set_flashdata('correcto', "Documento de reembolso cargado correctamente");
 redirect('welcome/comprobarSol?id='.$folio.'');
 
 
@@ -1108,11 +1109,12 @@ function validar_xml($file, $folio, $idpartida, $concepto)
 
       	if ($valido=="Vigente")
       	{
+			  
 			if ($this->Solicitud_model->checkxml($uuid))
 			{
 				$datos = $this->Solicitud_model->checksolicitud($folio);
 
-				if ($datos->folio!=$folio)
+				if ($datos->folio==$folio)
 				{
 					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
 					unlink($file);
@@ -1223,5 +1225,21 @@ public function viewComprobantes($id)
 }
 
 
+/*
+function eliminar() 
+{
+
+	$carpeta = './uploads/43/Gasolina/';
+	
+	$files = glob('./uploads/43/Gasolina/*'); // get all file names
+	foreach($files as $file)
+		{ // iterate files
+  		if(is_file($file))
+    	unlink($file); // delete file
+		}
+
+		rmdir($carpeta);
+}
+*/
 
 }

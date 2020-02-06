@@ -148,6 +148,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
          $subtotal=0;
          $use=$meta[0];
          $ok=0;
+         $aux=0;
           foreach ($partidas->result() as $user) {
             if($user->estatus!='1'){
               $ok=0;
@@ -165,9 +166,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo '<td><a href="'.base_url().'welcome/nousarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Sin Uso" <i class="material-icons blue-text center">visibility_off</i></td>';
               echo '<td><a href="'.base_url().'welcome/reembolsarSol?id='.$user->solicitudes_folio.'&to='.$user->idpartidas.'" title="Reembolso" <i class="material-icons blue-text center">monetization_on</i></td>';
               echo "<td>
-              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='facturas' class='waves-effect waves-light blue btn-small'>subir factura</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='facturas' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
+              <form class='col s12' method='post' action='".base_url()."welcome/cargar_factura/".$use->folio."/".$user->idpartidas."/".$user->descripcion."'  accept-charset='utf-8' enctype='multipart/form-data'>
+              <label for='facturas".$aux."' class='waves-effect waves-light blue btn-small'>subir factura</label>
+              <input type='file' multiple style='display: none' name='userfile[]' id='facturas".$aux."' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
               </form>
               </td>";
             }
@@ -182,9 +183,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo '<td align="center"><a href="'.base_url().'welcome/restSolcomp?id='.$user->solicitudes_folio.'&part='.$user->idpartidas.'&name='.$user->descripcion.'"<i class="material-icons red-text center">delete</i></td>';
               echo '<td></td>';
               echo "<td>
-              <form class='col s12' method='post' action='cargar_factura/$use->folio/$user->idpartidas/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='facturas' class='waves-effect waves-light blue btn-small'>subir factura</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='facturas' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
+              <form class='col s12' method='post' action='".base_url()."welcome/cargar_factura/".$use->folio."/".$user->idpartidas."/".$user->descripcion."'  accept-charset='utf-8' enctype='multipart/form-data'>
+              <label for='facturas".$aux."' class='waves-effect waves-light blue btn-small'>subir factura</label>
+              <input type='file' multiple style='display: none' name='userfile[]' id='facturas".$aux."' size='20' accept='.xml,.pdf' onchange='form.submit()'/>
               </form>
               </td>";
             }
@@ -200,8 +201,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               echo '<td></td>';
               echo "<td>
               <form class='col s12' method='post' action='cargar_reembolso/$use->folio/$user->descripcion'  accept-charset='utf-8' enctype='multipart/form-data'>
-              <label for='comprobante' class='waves-effect waves-light blue darken-4 btn-small'>subir comprobante</label>
-              <input type='file' multiple style='display: none' name='userfile[]' id='comprobante' size='20' accept='.pdf' onchange='form.submit()'/>
+              <label for='comprobante".$aux."' class='waves-effect waves-light blue darken-4 btn-small'>subir comprobante</label>
+              <input type='file' multiple style='display: none' name='userfile[]' id='comprobante".$aux."' size='20' accept='.pdf' onchange='form.submit()'/>
               </form>
               </td>";
             }
@@ -227,6 +228,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               $total=$total+$user->total;
               $subtotal=$subtotal+$user->documentado;
             }
+            $aux=$aux+1;
 
           }?> 
             <tr>
