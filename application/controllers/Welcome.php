@@ -307,9 +307,9 @@ public function validarSol()
 		$test['meta']=$this->Solicitud_model->getMetadata($_GET['id'],$name);
 		$test['aux']=$this->Solicitud_model->validatePartida($_GET['id']);
 		$meta=$test['meta'];
-			if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
-				redirect('welcome/verMisSolicitudes');
-			}
+			//if($meta[0]->Nombre!=$name){//Validamos que accesa a solicitudes propias por url
+			//	redirect('welcome/verMisSolicitudes');
+			//}
 		
 		$test['partidas']=$this->Solicitud_model->getPartidas($_GET['id']);
 		$this->load->view('menu',$test);
