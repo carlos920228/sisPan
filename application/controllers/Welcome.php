@@ -972,6 +972,8 @@ $carpeta = './uploads/'.$folio.'/'.$concepto;
 	$this->load->library('upload', $config);
 	$this->upload->initialize($config);
 
+	$aux="";
+
 	for($i=0;$i<$countfiles;$i++)
 	{
 		$_FILES['file']['name']     = $_FILES['userfile']['name'][$i];
@@ -983,11 +985,11 @@ $carpeta = './uploads/'.$folio.'/'.$concepto;
 		if($this->upload->do_upload('file'))
 		{
 		  	$comprobantes[$i] = $this->upload->data();
-
-			if ($comprobantes[$i]['file_type']=="text/xml")
-			{
-		  		$this->validar_xml('./uploads/'.$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name'].'', $folio, $idpartida, $concepto);
-			}
+			$aux = $aux."-".$comprobantes[$i]['file_type'];
+			//if ($comprobantes[$i]['file_type']=="text/xml")
+			//{
+		  	//	$this->validar_xml('./uploads/'.$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name'].'', $folio, $idpartida, $concepto);
+			//}
 		}
 
 	}
@@ -1003,9 +1005,10 @@ $this->load->library('zip');
 $this->zip->archive(FCPATH.'/uploads/'.$idpartida.'.zip');
 */
 
-$this->session->set_flashdata('correcto', $this->resultado);
-redirect('welcome/comprobarSol?id='.$folio.'');
+//$this->session->set_flashdata('correcto', $this->resultado);
+//redirect('welcome/comprobarSol?id='.$folio.'');
 
+echo $aux;
 
 }
 
