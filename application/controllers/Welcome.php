@@ -1114,11 +1114,11 @@ function validar_xml($file, $folio, $idpartida, $concepto)
 			{
 				$datos = $this->Solicitud_model->checksolicitud($folio);
 
-				if ($datos->folio==$folio)
-				{
+				//if ($datos->folio!=$folio)
+				//{
 					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
-					unlink($file);
-				}
+				//	unlink($file);
+				//}
 				
 			}
 			else
