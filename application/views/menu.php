@@ -90,6 +90,8 @@ header, main, footer ,body{
             echo '<li><a href="'.base_url().'welcome/verSolicitudes">Pendientes de aprobar</a></li>';
             echo '<li><a href="'.base_url().'welcome/pagarSolicitudes">Pendientes de pagar</a></li>';
             echo '<li><a href="'.base_url().'welcome/verificarComprobacion">Verificar comprobación</a></li>';
+            echo '<li><a href="'.base_url().'Solicitudes/finalizadas">Finalizadas</a></li>';
+            echo '<li><a href="'.base_url().'Solicitudes/incidencias">Incidencias</a></li>';
             echo "</ul>";
             //--------------------------
             echo '<li><a href="'.base_url().'welcome/verProveedores"><i class="small material-icons white-text">payment</i>Proveedores</a></li>';

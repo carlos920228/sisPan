@@ -2,7 +2,6 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 ?>
 <title>Mis solicitudes</title>
-  <title>Mis solicitudes</title>
   <div class="container">
    <ul id="tabs tabs-fixed-width tab-demo z-depth-1" class="tabs">
     <li class="tab col s3 grey lighten-1"><a class="active black-text" href="#test-swipe-1" >Pendientes</a></li>
@@ -78,6 +77,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <th>Motivo</th>
         <th></th>
       </tr>
+      <?php
+          foreach ($finalizadas->result() as $user) {
+            echo "<tr>";
+            echo "<td>$user->Fecha</td>";
+            echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
+            echo "<td>$user->motivo</td>";
+            echo '<td><a href="'.base_url().'Solicitudes/detalleSol?id='.$user->folio.'" title="Comprobar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo "</tr>";
+          }?>
     </table>  
 </div>
 <div id="test-swipe-6" class="col s12">
@@ -94,7 +102,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
             echo "<td>$user->Fecha</td>";
             echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
             echo "<td>$user->motivo</td>";
-            echo '<td><a href="'.base_url().'welcome/modSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo '<td><a href="'.base_url().'Solicitudes/detalleSol?id='.$user->folio.'" title="Modificar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
             echo "</tr>";
           }?>      
     </table>  
@@ -107,6 +115,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <th>Motivo</th>
         <th></th>
       </tr>
+      <?php
+          foreach ($incidencia->result() as $user) {
+            echo "<tr>";
+            echo "<td>$user->Fecha</td>";
+            echo "<td><b>".number_format($user->total, 2, '.', ',')."<b></td>";
+            echo "<td>$user->motivo</td>";
+            echo '<td><a href="'.base_url().'Solicitudes/detalleSol?id='.$user->folio.'" title="Comprobar Solicitud"><i class="material-icons blue-text center">remove_red_eye</i></a></td>';
+            echo "</tr>";
+          }?>
     </table>  
 </div>
 </div>

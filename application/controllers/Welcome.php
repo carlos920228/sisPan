@@ -65,7 +65,8 @@ public function verMisSolicitudes()
 		$test['canceladas']=$this->Solicitud_model->get_solUserPenWait($name,'cancelada');
 		$test['aceptadas']=$this->Solicitud_model->get_solUserPenWait($name,'aceptada');
 		$test['pagadas']=$this->Solicitud_model->get_solUserPenWait($name,'pagada');
-		$test['finalizadas']=$this->Solicitud_model->get_solUserPenWait($name,'finalizadas');
+		$test['finalizadas']=$this->Solicitud_model->get_solUserPenWait($name,'finalizada');
+		$test['incidencia']=$this->Solicitud_model->get_solUserPenWait($name,'incidencia');
 		$this->load->view('menu',$test);
 		$this->load->view('solicitudes',$test);
 	}
@@ -984,8 +985,8 @@ $carpeta = './uploads/'.$folio.'/'.$concepto;
 		{
 		  	$comprobantes[$i] = $this->upload->data();
 
-			//if ($comprobantes[$i]['file_type']=="text/xml")
-			if ($comprobantes[$i]['file_type']=="application/xml")
+			if ($comprobantes[$i]['file_type']=="text/xml" || $comprobantes[$i]['file_type']=="application/xml")
+			//if ($comprobantes[$i]['file_type']=="application/xml")
 			{
 		  		$this->validar_xml('./uploads/'.$folio.'/'.$concepto.'/'.$comprobantes[$i]['file_name'].'', $folio, $idpartida, $concepto);
 			}

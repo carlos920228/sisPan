@@ -11,6 +11,20 @@ class Solicitud_model extends CI_Model{
 		return $result;
 		
 	}
+    function get_finalizadas(){
+        $this->db->where('estado','finalizada');
+        $this->db->order_by('folio', 'DESC');
+        $result= $this->db->get('solicitudes');
+        return $result;
+        
+    }
+    function get_incidencias(){
+        $this->db->where('estado','incidencia');
+        $this->db->order_by('folio', 'DESC');
+        $result= $this->db->get('solicitudes');
+        return $result;
+        
+    }
     function get_solUserPenWait($name,$estado){
         $this->db->where('estado',$estado);
         $this->db->where('nombre',$name);
