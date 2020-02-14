@@ -266,6 +266,15 @@ function validatePartida($folio){
 }
 
 //Consulta que obtiene los datos de la persona que ya tiene en uso un xml
+public function checkfechas($folio,$fecha){
+    $this->db->where('folio',$folio);
+    $this->db->where('DATE_ADD(fecha_inicio,INTERVAL -1 DAY) >=', $fecha, false);
+    $this->db->where('DATE_ADD(fecha_fin,INTERVAL 1 DAY) <=', $fecha, false);
+    $result= $this->db->get('solicitudes');
+    return $result->row(); 
+}
+
+//Consulta que obtiene los datos de la persona que ya tiene en uso un xml
 public function checksolicitud($folio){
     $this->db->where('folio',$folio);
     $result= $this->db->get('solicitudes');
@@ -338,6 +347,7 @@ public function updatepartida($folio,$idpartida){
     $this->db->set('foliosat', $this->folio);
     $this->db->set('xml', $this->xml);
     $this->db->set('estatus', $this->estatus);
+    $this->db->set('tiempo', $this->tiempo);
 
     $this->db->insert('comprobantes');
 

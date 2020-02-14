@@ -20,7 +20,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
             <input id="total" name="total" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="total">Solicitado</label>
             </div>
             <div class="input-field col s4">
-            <input id="comprobado" name="comprobado" type="number" class="validate" step="any" placeholder="0.00" min="1" required><label for="comprobado">Comprobado</label>
+            <input id="comprobado" name="comprobado" type="number" class="validate" step="any" value="0" placeholder="0.00" min="1" required><label for="comprobado">Comprobado</label>
             </div>
           </div> 
 
@@ -82,7 +82,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');?>
               if ($use->tipo_sol==0)
                {echo 'value="Viaticos"';}
                else {echo 'value="Reembolso"';} ?> readonly>
-              <label for="ciudad_origen">Tipo de Solicitud</label>
+              <label for="tipo_sol">Tipo de Solicitud</label>
+            </div>
+            <div class="input-field col s3">
+              <input id="fecha_inicio" type="date" name="fecha_inicio" 
+              <?php $use=$meta[0];
+               echo 'value="'.$use->fecha_inicio.'"';?> readonly>
+              <label for="fecha_inicio">Fecha de Salida</label>
+            </div>
+            <div class="input-field col s3">
+              <input id="fecha_fin" type="date" name="fecha_fin" 
+              <?php $use=$meta[0];
+               echo 'value="'.$use->fecha_fin.'"';?> readonly>
+              <label for="fecha_fin">Fecha de Regreso</label>
             </div>
           </div>
 

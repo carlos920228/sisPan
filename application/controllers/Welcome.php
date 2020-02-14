@@ -678,13 +678,21 @@ public function viewpdf(){
 </div>
 
 <div class="form-group row">
-<div class="col-xs-4">
+<div class="col-xs-3">
   <label for="ex1">Area del Solicitante</label>
   <input class="form-control input-sm" id="ex1" type="text" value="'.$test->area.'">
 </div>
-<div class="col-xs-7">
+<div class="col-xs-2">
   <label for="ex2">Tipo de Solicitud</label>
   <input class="form-control input-sm" id="ex2" type="text" value="'.$tipo.'">
+</div>
+<div class="col-xs-3">
+  <label for="ex1">Fecha de Salida</label>
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->fecha_inicio.'">
+</div>
+<div class="col-xs-2">
+  <label for="ex2">Fecha de Regreso</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->fecha_fin.'">
 </div>
 </div>
 
@@ -821,7 +829,7 @@ public function viewpdfcomp(){
   <div class=”container-fluid”>
   <div class="row">
 
-  <h1 class="text-center bg-info">Solicitud de Viaticos</h1>
+  <h1 class="text-center bg-info">Comprobación de Viaticos</h1>
 
   <div class="panel panel-default">
   <div class="panel-body">
@@ -842,13 +850,21 @@ public function viewpdfcomp(){
 </div>
 
 <div class="form-group row">
-<div class="col-xs-4">
+<div class="col-xs-3">
   <label for="ex1">Area del Solicitante</label>
   <input class="form-control input-sm" id="ex1" type="text" value="'.$test->area.'">
 </div>
-<div class="col-xs-7">
+<div class="col-xs-2">
   <label for="ex2">Tipo de Solicitud</label>
   <input class="form-control input-sm" id="ex2" type="text" value="'.$tipo.'">
+</div>
+<div class="col-xs-3">
+  <label for="ex1">Fecha de Salida</label>
+  <input class="form-control input-sm" id="ex1" type="text" value="'.$test->fecha_inicio.'">
+</div>
+<div class="col-xs-2">
+  <label for="ex2">Fecha de Regreso</label>
+  <input class="form-control input-sm" id="ex2" type="text" value="'.$test->fecha_fin.'">
 </div>
 </div>
 
@@ -1077,9 +1093,12 @@ function validar_xml($file, $folio, $idpartida, $concepto)
       	{ $total = $Comprobante['Total'];}
  
       	foreach ($xml->xpath('//t:TimbreFiscalDigital') as $tfd) 
-      	{ $uuid= $tfd['UUID'];} 
-
-
+		{ $uuid= $tfd['UUID'];
+		  $fecha= date("d/m/Y", strtotime($tfd['FechaTimbrado']));} 
+		
+		//foreach ($xml->xpath('//cfdi:Comprobante') as $Comprobante)
+		//{ $fecha = $Comprobante['Fecha'];}
+		  
     	$soap = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/"><soapenv:Header/><soapenv:Body><tem:Consulta><tem:expresionImpresa>?re='.$emisor.'&amp;rr='.$receptor.'&amp;tt='.$total.'&amp;id='.$uuid.'</tem:expresionImpresa></tem:Consulta></soapenv:Body></soapenv:Envelope>';
 
     	$headers = 
@@ -1118,13 +1137,26 @@ function validar_xml($file, $folio, $idpartida, $concepto)
 
 				//if ($datos->folio!=$folio)
 				//{
-					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $folio . "<br>";
+					$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal en Uso por: ". $datos->Nombre. " Solicitud Folio: " . $datos->folio . "<br>";
 				//	unlink($file);
 				//}
 				
 			}
 			else
 			{
+
+				if ($this->Solicitud_model->checkfechas($folio,$fecha))
+				{
+					$info="";
+					$this->Solicitud_model->tiempo=0;
+					
+				}
+				else
+				{
+					$info="Pero Fuera de Tiempo";
+					$this->Solicitud_model->tiempo=1;
+				}
+
 				$this->Solicitud_model->emisor=$emisor;
 				$this->Solicitud_model->receptor=$receptor;
 				$this->Solicitud_model->total=$total;
@@ -1136,7 +1168,7 @@ function validar_xml($file, $folio, $idpartida, $concepto)
 	
 				$this->Solicitud_model->updatepartida($folio,$idpartida);
 
-				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal Valido". "<br>";
+				$this->resultado = $this->resultado . "El Archivo: " . str_replace("./uploads/".$folio."/".$concepto."/","",$file) ." es un Comprobante Fiscal Valido ".$info."<br>";
 			}
 		
       	}
@@ -1202,8 +1234,13 @@ public function viewComprobantes($id)
 		
 			foreach ($comp->result() as $detalle) 
 			{
-				echo '<tr>
-						<td>'.strtoupper($detalle->foliosat).'</td>
+				echo '<tr>';
+						if ($detalle->tiempo==1)
+						 { echo '<td style="color:red;">';}
+						 else
+						 {echo '<td>';}
+						 
+						echo  ''.strtoupper($detalle->foliosat).'</td>
 						<td>'.number_format($detalle->totalfactura, 2, ".", ",").'</td>
 						<td>
 							<label>';

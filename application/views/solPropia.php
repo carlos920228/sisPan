@@ -34,6 +34,14 @@ $fecha=date("Y-m-d");
             </select>
             <label data-error="wrong" data-success="right" for="activity">Tipo de Solicitud</label>
             </div>
+            <div class="input-field col s3">
+              <input id="fecha_inicio" type="date" name="fecha_inicio" class="validate" value="<?php echo $fecha ?>" required>
+              <label for="fecha_inicio">Fecha de Salida</label>
+            </div>
+            <div class="input-field col s3">
+              <input id="fecha_fin" type="date" name="fecha_fin" class="validate" value="<?php echo $fecha ?>" required>
+              <label for="fecha_fin">Fecha de Regreso</label>
+            </div>
           </div>
 
           <div class="row">
